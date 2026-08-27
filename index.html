@@ -2,8 +2,31 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ordinazioni GDA</title>
+
+<!-- PWA: standalone senza barra browser -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GDA">
+<meta name="theme-color" content="#1a1916">
+
+<!-- Manifest inline via data URI -->
+<link rel="manifest" href="data:application/json;charset=utf-8,{
+  &quot;name&quot;: &quot;Ordinazioni GDA&quot;,
+  &quot;short_name&quot;: &quot;GDA&quot;,
+  &quot;start_url&quot;: &quot;.&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;%231a1916&quot;,
+  &quot;theme_color&quot;: &quot;%231a1916&quot;,
+  &quot;orientation&quot;: &quot;landscape&quot;,
+  &quot;icons&quot;: [{
+    &quot;src&quot;: &quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='.9em' font-size='80' x='10'>🍽</text></svg>&quot;,
+    &quot;sizes&quot;: &quot;any&quot;,
+    &quot;type&quot;: &quot;image/svg+xml&quot;
+  }]
+}">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
@@ -176,17 +199,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .stat-pronto{background:var(--succ-bg);color:var(--succ-text);border-color:var(--succ-bord);}
 .last-update{font-size:12px;color:var(--text-mut);}
 /* 2 colonne */
-.cucina-kanban{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:auto;gap:10px;padding:10px;overflow-y:auto;align-content:start;}
-@media(max-width:900px){.cucina-kanban{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:500px){.cucina-kanban{grid-template-columns:1fr;}}
-.comanda-card{background:var(--bg2);border:2px solid #1a1916;border-radius:10px;overflow:hidden;}
-.comanda-head{display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:2px solid #1a1916;background:var(--bg1);}
-.comanda-tavolo{font-size:26px;font-weight:700;flex:1;}
-.comanda-time{font-size:17px;color:var(--text-mut);}
-.new-badge{background:var(--dang-fill);color:var(--dang-on);font-size:13px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.04em;}
-.comanda-del-btn{width:24px;height:24px;border:1px solid var(--dang-bord);border-radius:var(--radius);background:transparent;color:var(--dang-text);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cucina-kanban{flex:1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:9px;padding:9px;overflow-y:auto;align-content:start;}
+@media(max-width:1100px){.cucina-kanban{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.cucina-kanban{grid-template-columns:1fr;}}
+.comanda-card{background:var(--bg2);border:2px solid #1a1916;border-radius:9px;overflow:hidden;}
+.comanda-head{display:flex;align-items:center;gap:5px;padding:7px 11px;border-bottom:2px solid #1a1916;background:var(--bg1);}
+.comanda-tavolo{font-size:23px;font-weight:700;flex:1;}
+.comanda-time{font-size:15px;color:var(--text-mut);}
+.new-badge{background:var(--dang-fill);color:var(--dang-on);font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em;}
+.comanda-del-btn{width:22px;height:22px;border:1px solid var(--dang-bord);border-radius:var(--radius);background:transparent;color:var(--dang-text);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .comanda-del-btn:hover{background:var(--dang-bg);}
-.cat-section-header{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px 2px;border-bottom:1px solid rgba(0,0,0,.08);}
+.cat-section-header{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px 2px;border-bottom:1px solid rgba(0,0,0,.08);}
 .cat-color-0{background:#fff0e0;color:#c45000;}
 .cat-color-1{background:#e6f4ea;color:#2e7d32;}
 .cat-color-2{background:#e3edf9;color:#1565c0;}
@@ -194,17 +217,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .cat-color-4{background:#ede7f6;color:#6a1b9a;}
 .cat-color-5{background:#ede7f6;color:#6a1b9a;}
 .cat-color-other{background:#f5f5f5;color:#333;}
-.piatto-riga{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.piatto-riga{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--border);}
 .piatto-riga:last-of-type{border-bottom:none;}
-.piatto-riga-info{flex:1;display:flex;gap:8px;align-items:baseline;}
-.piatto-riga-qty{font-weight:800;font-size:24px;min-width:30px;color:var(--text-pri);}
-.piatto-riga-name{font-size:22px;font-weight:600;color:var(--text-pri);}
+.piatto-riga-info{flex:1;display:flex;gap:7px;align-items:baseline;}
+.piatto-riga-qty{font-weight:800;font-size:22px;min-width:27px;color:var(--text-pri);}
+.piatto-riga-name{font-size:20px;font-weight:600;color:var(--text-pri);}
 .piatto-riga-name.done{text-decoration:line-through;color:var(--text-mut);font-weight:400;}
-.piatto-pronto-btn{padding:3px 8px;border-radius:var(--radius);border:1px solid var(--succ-bord);background:transparent;color:var(--succ-text);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.piatto-pronto-btn{padding:3px 7px;border-radius:var(--radius);border:1px solid var(--succ-bord);background:transparent;color:var(--succ-text);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .piatto-pronto-btn:hover{background:var(--succ-bg);}
-.comanda-note{font-size:17px;color:var(--text-sec);padding:9px 16px;border-top:2px solid #1a1916;background:var(--bg1);}
-.kanban-empty{padding:24px;text-align:center;color:var(--text-mut);font-size:13px;}
-@media(max-width:700px){.cucina-kanban{grid-template-columns:1fr;}}
+.comanda-note{font-size:15px;color:#1a1916;font-weight:700;padding:8px 14px;border-top:2px solid #1a1916;background:var(--bg1);}
+.comanda-note-label{color:#dc2626;font-weight:700;}
+.kanban-empty{padding:22px;text-align:center;color:var(--text-mut);font-size:12px;}
 
 /* ════ TAVOLI ════ */
 #screen-tavoli{min-height:calc(100vh - 48px);}
@@ -264,7 +287,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   <div class="topbar-title">GDA <span class="sync-dot" id="sync-dot"></span></div>
   <div class="tab-bar">
     <button class="tab-bar-btn active" id="tab-sala"  onclick="showTab('cameriere')">Sala</button>
-    <button class="tab-bar-btn"        id="tab-cuci"  onclick="showTab('cucina')">Cucina</button>
+    <button class="tab-bar-btn"        id="tab-cuci"  onclick="showTab('cucina')">Cucina <span id="cucina-tab-count" style="background:rgba(0,0,0,.12);border-radius:10px;padding:1px 7px;font-size:12px;margin-left:2px;display:none">0</span></button>
     <button class="tab-bar-btn"        id="tab-tavo"  onclick="showTab('tavoli')">Tavoli</button>
     <button class="tab-bar-btn"        id="tab-menu"  onclick="showTab('menu')">Menu</button>
   </div>
@@ -343,12 +366,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 <!-- ══════════════ CUCINA ══════════════ -->
 <div id="screen-cucina" class="screen">
-  <div class="cucina-toolbar">
-    <div class="cucina-stats">
-      <span class="stat-pill stat-prep" id="stat-comande">🍽 0 comande</span>
-    </div>
-    <span class="last-update" id="last-update"></span>
-  </div>
   <div class="cucina-kanban" id="cucina-grid"></div>
 </div>
 
@@ -646,8 +663,8 @@ async function loadCucina(){
 function parsePiatti(c){return Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');}
 
 function renderCucina(){
-  document.getElementById('last-update').textContent=new Date().toLocaleTimeString('it-IT');
-  document.getElementById('stat-comande').textContent='🍽 '+comande.length+' comande';
+  const countEl=document.getElementById('cucina-tab-count');
+  if(countEl){countEl.textContent=comande.length;countEl.style.display=comande.length?'inline':'none';}
 
   const el=document.getElementById('cucina-grid');
   if(!comande.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-mut);font-size:15px">Nessuna comanda</div>';return;}
@@ -689,7 +706,7 @@ function renderCucina(){
         <button class="comanda-del-btn" onclick="cancellaComanda('${c.id}')" title="Cancella">✕</button>
       </div>
       ${catHtml}
-      ${c.note?`<div class="comanda-note">Note: ${esc(c.note)}</div>`:''}
+      ${c.note?`<div class="comanda-note"><span class="comanda-note-label">Note</span> ${esc(c.note)}</div>`:''}
     </div>`;
   }).join('');
 }
