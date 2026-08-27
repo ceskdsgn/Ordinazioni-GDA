@@ -243,10 +243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
       <span class="stat-pill stat-prep"   id="stat-prep">👨‍🍳 0 in prep.</span>
       <span class="stat-pill stat-pronto" id="stat-pronto">✅ 0 pronti</span>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <span class="last-update" id="last-update">—</span>
-      <button class="refresh-btn" onclick="loadCucina()">↻ Aggiorna</button>
-    </div>
+    <span class="last-update" id="last-update"></span>
   </div>
   <div class="cucina-kanban">
     <div class="kanban-col">
@@ -263,9 +260,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 <!-- ══════════════ TAVOLI ══════════════ -->
 <div id="screen-tavoli" class="screen">
   <div class="tavoli-wrap">
-    <div class="tavoli-refresh">
-      <button class="refresh-btn" onclick="loadTavoli()">↻ Aggiorna</button>
-    </div>
     <div class="tavoli-grid" id="tavoli-grid">
       <div class="tavolo-empty">Nessun tavolo attivo</div>
     </div>
@@ -475,89 +469,109 @@ async function sendComanda(){
 
 /* ── CUCINA ── */
 async function loadCucina(){
-  setSyncState('syncing');
   const{data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
   if(error){setSyncState('error');return;}
   comande=data||[];setSyncState('online');renderCucina();
 }
+
+function parsePiatti(c){return Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');}
+function parsePronti(c){return Array.isArray(c.piatti_pronti)?c.piatti_pronti:JSON.parse(c.piatti_pronti||'[]');}
+
 function renderCucina(){
-  document.getElementById('last-update').textContent='Aggiornato: '+new Date().toLocaleTimeString('it-IT');
-  const prep=comande.filter(c=>c.stato==='preparazione');
-  const pron=comande.filter(c=>c.stato==='pronto');
-  document.getElementById('stat-prep').textContent  ='👨‍🍳 '+prep.length+' in prep.';
-  document.getElementById('stat-pronto').textContent='✅ '+pron.length+' pronti';
-  document.getElementById('col-count-prep').textContent  =prep.length;
-  document.getElementById('col-count-pronto').textContent=pron.length;
-  renderKanbanCol('col-prep',prep);
-  renderKanbanCol('col-pronto',pron);
-}
-function renderKanbanCol(elId,cards){
-  const el=document.getElementById(elId);
-  if(!cards.length){el.innerHTML='<div class="kanban-empty">Nessuna comanda</div>';return;}
-  el.innerHTML=cards.map(c=>{
+  document.getElementById('last-update').textContent=new Date().toLocaleTimeString('it-IT');
+
+  // Per ogni comanda costruiamo "righe da preparare" e "righe pronte" separatamente
+  // Una comanda può apparire in entrambe le colonne contemporaneamente
+  let totalPrep=0, totalPron=0;
+  const colPrepHtml=[], colPronHtml=[];
+
+  comande.forEach(c=>{
+    const piatti=parsePiatti(c);
+    const pronti=parsePronti(c);
     const isNew=!cucinaSeenIds.has(c.id);if(isNew)cucinaSeenIds.add(c.id);
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-    const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
-    const pronti=Array.isArray(c.piatti_pronti)?c.piatti_pronti:(JSON.parse(c.piatti_pronti||'[]'));
-    const totPiatti=piatti.length;
-    const totPronti=pronti.length;
-    return`<div class="comanda-card">
-      <div class="comanda-head">
-        <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
-        ${isNew?'<span class="new-badge">NUOVO</span>':''}
-        <span class="comanda-time">${time}</span>
-      </div>
-      ${piatti.map((p,i)=>{
-        const isDone=pronti.includes(i);
-        return`<div class="piatto-riga">
+
+    const righePrep=piatti.filter((_,i)=>!pronti.includes(i));
+    const righePron=piatti.filter((_,i)=>pronti.includes(i));
+
+    if(righePrep.length>0){
+      totalPrep++;
+      colPrepHtml.push(`<div class="comanda-card">
+        <div class="comanda-head">
+          <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+          ${isNew?'<span class="new-badge">NUOVO</span>':''}
+          <span class="comanda-time">${time}</span>
+        </div>
+        ${righePrep.map(p=>{
+          const idx=piatti.indexOf(p);
+          return`<div class="piatto-riga">
+            <div class="piatto-riga-info">
+              <span class="piatto-riga-qty">${p.qty}×</span>
+              <span class="piatto-riga-name">${esc(p.name)}</span>
+            </div>
+            <button class="piatto-pronto-btn" onclick="setPiattoProto('${c.id}',${idx})">Pronto</button>
+          </div>`;
+        }).join('')}
+        ${c.note?`<div class="comanda-note">📝 ${esc(c.note)}</div>`:''}
+      </div>`);
+    }
+
+    if(righePron.length>0){
+      totalPron++;
+      colPronHtml.push(`<div class="comanda-card">
+        <div class="comanda-head">
+          <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+          <span class="comanda-time">${time}</span>
+        </div>
+        ${righePron.map(p=>`<div class="piatto-riga">
           <div class="piatto-riga-info">
             <span class="piatto-riga-qty">${p.qty}×</span>
-            <span class="piatto-riga-name ${isDone?'done':''}">${esc(p.name)}</span>
+            <span class="piatto-riga-name done">${esc(p.name)}</span>
           </div>
-          ${!isDone?`<button class="piatto-pronto-btn" onclick="setPiattoProto('${c.id}',${i})">Pronto</button>`
-            :`<span style="font-size:12px;color:var(--succ-text);font-weight:600">✓</span>`}
-        </div>`;
-      }).join('')}
-      <div class="piatti-progress">${totPronti}/${totPiatti} pronti</div>
-      ${c.note?`<div class="comanda-note">📝 ${esc(c.note)}</div>`:''}
-    </div>`;
-  }).join('');
+          <span style="font-size:13px;color:var(--succ-text);font-weight:700">✓</span>
+        </div>`).join('')}
+      </div>`);
+    }
+  });
+
+  document.getElementById('stat-prep').textContent  ='👨‍🍳 '+totalPrep+' in prep.';
+  document.getElementById('stat-pronto').textContent='✅ '+totalPron+' pronti';
+  document.getElementById('col-count-prep').textContent  =totalPrep;
+  document.getElementById('col-count-pronto').textContent=totalPron;
+  document.getElementById('col-prep').innerHTML  =colPrepHtml.length?colPrepHtml.join(''):'<div class="kanban-empty">Nessuna comanda</div>';
+  document.getElementById('col-pronto').innerHTML=colPronHtml.length?colPronHtml.join(''):'<div class="kanban-empty">Nessuna comanda</div>';
 }
 
-async function setPiattoProto(comandaId, idx){
+async function setPiattoProto(comandaId,idx){
   const c=comande.find(x=>x.id===comandaId);if(!c)return;
-  const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
-  let pronti=Array.isArray(c.piatti_pronti)?[...c.piatti_pronti]:[...JSON.parse(c.piatti_pronti||'[]')];
+  const piatti=parsePiatti(c);
+  const pronti=[...parsePronti(c)];
   if(!pronti.includes(idx)) pronti.push(idx);
   const tuttiPronti=pronti.length>=piatti.length;
-  const update=tuttiPronti
-    ?{piatti_pronti:pronti,stato:'completato'}
-    :pronti.length>0?{piatti_pronti:pronti,stato:'pronto'}:{piatti_pronti:pronti};
+  const update=tuttiPronti?{piatti_pronti:pronti,stato:'completato'}:{piatti_pronti:pronti};
   setSyncState('syncing');
   const{error}=await sb.from('comande').update(update).eq('id',comandaId);
   if(error){setSyncState('error');showToast('❌ Errore');return;}
   setSyncState('online');
-  if(tuttiPronti) showToast('✅ Tutte le pietanze del tavolo '+c.tavolo+' sono pronte!');
+  if(tuttiPronti) showToast('✅ Comanda tavolo '+c.tavolo+' completata!');
   await loadCucina();
+  if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
 }
 
 /* ── TAVOLI ── */
 async function loadTavoli(){
-  setSyncState('syncing');
   const{data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
   if(error){setSyncState('error');return;}
-  setSyncState('online');
-  renderTavoli(data||[]);
+  setSyncState('online');renderTavoli(data||[]);
 }
 function renderTavoli(comandeAttive){
   const el=document.getElementById('tavoli-grid');
   if(!comandeAttive.length){el.innerHTML='<div class="tavolo-empty">Nessun tavolo attivo al momento</div>';return;}
-  // raggruppa per tavolo
   const byTavolo={};
   comandeAttive.forEach(c=>{
     const tv=c.tavolo;
     if(!byTavolo[tv]) byTavolo[tv]={tavolo:tv,piatti:{},note:[]};
-    const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
+    const piatti=parsePiatti(c);
     piatti.forEach(p=>{
       const k=p.name;
       if(!byTavolo[tv].piatti[k]) byTavolo[tv].piatti[k]={name:k,qty:0,price:p.price};
@@ -585,18 +599,23 @@ function renderTavoli(comandeAttive){
   }).join('');
 }
 
-/* ── REALTIME ── */
+/* ── REALTIME + AUTO-REFRESH 5s ── */
 function subscribeRealtime(){
   sb.channel('all-changes')
-    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},()=>{
-      loadCucina();
-      // aggiorna tavoli se visibile
-      if(document.getElementById('screen-tavoli').classList.contains('visible')) loadTavoli();
+    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},async()=>{
+      await loadCucina();
+      if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
     })
     .subscribe(s=>{
       if(s==='SUBSCRIBED')setSyncState('online');
       else if(s==='CLOSED'||s==='CHANNEL_ERROR')setSyncState('error');
     });
+
+  // polling ogni 5 secondi come fallback
+  setInterval(async()=>{
+    if(document.getElementById('screen-cucina').classList.contains('visible')) await loadCucina();
+    if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
+  }, 5000);
 }
 
 /* ── MENU MANAGER ── */
