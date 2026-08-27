@@ -18,8 +18,7 @@ html, body { height: 100%; }
   --succ-bg: #f0fdf4; --succ-text: #166534; --succ-bord: #bbf7d0;
   --dang-fill: #dc2626; --dang-on: #ffffff;
   --dang-bg: #fef2f2; --dang-text: #991b1b; --dang-bord: #fecaca;
-  --radius: 8px;
-  --shadow-md: 0 4px 12px rgba(0,0,0,.12);
+  --radius: 8px; --shadow-md: 0 4px 12px rgba(0,0,0,.12);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -41,27 +40,21 @@ body {
   font-size: 16px; line-height: 1.5;
 }
 
-/* ── TOPBAR ── */
+/* ── TOPBAR con tab unica ── */
 .topbar {
-  display: flex; align-items: center; gap: 6px;
-  padding: 10px 14px; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100; flex-wrap: wrap;
+  display: flex; align-items: center;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
 }
-.topbar-title { font-size: 17px; font-weight: 600; flex: 1; white-space: nowrap; }
-.tab-btn {
-  padding: 7px 14px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-sec); font-size: 14px; font-weight: 500;
-  cursor: pointer; transition: all .15s;
+.topbar-title {
+  font-size: 15px; font-weight: 600;
+  padding: 0 14px; white-space: nowrap; color: var(--text-pri);
+  border-right: 1px solid var(--border);
+  height: 48px; display: flex; align-items: center; gap: 6px;
 }
-.tab-btn:hover { background: var(--bg1); }
-.tab-btn.active { background: var(--acc-fill); color: var(--acc-on); border-color: var(--acc-fill); }
-
-/* sync indicator */
 .sync-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #6b6860; display: inline-block; margin-left: 4px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #6b6860; display: inline-block; flex-shrink: 0;
   transition: background .3s;
 }
 .sync-dot.online  { background: #16a34a; }
@@ -69,16 +62,35 @@ body {
 .sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
+/* Tab bar */
+.tab-bar {
+  flex: 1; display: flex; height: 48px;
+}
+.tab-bar-btn {
+  flex: 1; height: 100%; border: none; background: transparent;
+  color: var(--text-sec); font-size: 14px; font-weight: 500;
+  cursor: pointer; position: relative; transition: color .15s;
+  border-bottom: 2px solid transparent;
+  letter-spacing: .01em;
+}
+.tab-bar-btn:hover { color: var(--text-pri); background: var(--bg1); }
+.tab-bar-btn.active {
+  color: var(--acc-fill); border-bottom-color: var(--acc-fill);
+  font-weight: 600;
+}
+.tab-bar-btn + .tab-bar-btn { border-left: 1px solid var(--border); }
+
 .screen { display: none; }
 .screen.visible { display: flex; flex-direction: column; }
 
-/* ════ CAMERIERE ════ */
-#screen-cameriere { min-height: calc(100vh - 53px); flex-direction: column; }
+/* ════ CAMERIERE – livello 1: griglia categorie ════ */
+#screen-cameriere { min-height: calc(100vh - 48px); flex-direction: column; }
+
 .cam-tavolo-bar {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px; background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  position: sticky; top: 53px; z-index: 90;
+  position: sticky; top: 48px; z-index: 90;
 }
 .cam-tavolo-bar label { font-size: 14px; font-weight: 500; color: var(--text-sec); white-space: nowrap; }
 .cam-tavolo-bar select {
@@ -87,45 +99,110 @@ body {
   color: var(--text-pri); font-size: 15px;
   -webkit-appearance: none; appearance: none;
 }
-.cam-menu { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.cam-cat-header {
-  font-size: 11px; font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--acc-text);
-  padding: 10px 14px 5px; background: var(--acc-bg);
-  border-bottom: 1px solid var(--acc-bord);
-  border-top: 1px solid var(--acc-bord);
-}
-.cam-menu-item {
-  display: flex; align-items: center; padding: 13px 14px;
-  border-bottom: 1px solid var(--border); background: var(--bg2);
-  cursor: pointer; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background .1s; gap: 10px;
-}
-.cam-menu-item:active { background: var(--bg1); }
-.cam-item-info { flex: 1; min-width: 0; }
-.cam-item-name { font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cam-item-price { font-size: 14px; color: var(--acc-text); font-weight: 600; margin-top: 2px; }
-.cam-add-btn {
-  width: 36px; height: 36px; border-radius: 50%;
-  border: 1.5px solid var(--acc-fill); background: var(--acc-bg);
-  color: var(--acc-fill); font-size: 22px; line-height: 1;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background .1s;
-}
-.cam-add-btn:active { background: var(--acc-fill); color: var(--acc-on); }
 
-.cart-fab {
-  position: fixed; bottom: 20px; right: 16px; z-index: 200;
-  background: var(--acc-fill); color: var(--acc-on); border: none;
-  border-radius: 28px; padding: 13px 20px; font-size: 16px; font-weight: 600;
-  cursor: pointer; display: flex; align-items: center; gap: 8px;
-  box-shadow: var(--shadow-md); transition: transform .15s;
+/* Livello 1: box categorie */
+.cam-level { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.cam-level.hidden { display: none; }
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 16px 14px;
 }
-.cart-fab:active { transform: scale(.97); }
-.cart-fab .cart-count { background: rgba(255,255,255,.25); border-radius: 12px; padding: 1px 8px; font-size: 14px; }
+.cat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 12px 20px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; cursor: pointer;
+  transition: background .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 110px; position: relative;
+}
+.cat-box:active { background: var(--acc-bg); transform: scale(.97); }
+.cat-box-emoji { font-size: 32px; line-height: 1; }
+.cat-box-name  { font-size: 15px; font-weight: 600; color: var(--text-pri); }
+.cat-box-count {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--acc-fill); color: var(--acc-on);
+  font-size: 12px; font-weight: 700;
+  border-radius: 10px; padding: 1px 7px;
+  display: none;
+}
+.cat-box-count.visible { display: block; }
+
+/* Livello 2: lista piatti in categoria */
+.cam-piatti-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 97px; z-index: 85;
+}
+.back-btn {
+  width: 34px; height: 34px; border-radius: var(--radius);
+  border: 1px solid var(--border-s); background: transparent;
+  color: var(--text-pri); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.cam-piatti-title { font-size: 17px; font-weight: 600; flex: 1; }
+
+.cam-piatti-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* Piatto row con qty inline */
+.cam-piatto-row {
+  display: flex; align-items: center;
+  padding: 13px 14px; border-bottom: 1px solid var(--border);
+  background: var(--bg2); gap: 12px;
+}
+.cam-piatto-info { flex: 1; min-width: 0; }
+.cam-piatto-name { font-size: 16px; font-weight: 500; }
+.cam-piatto-price { font-size: 14px; color: var(--acc-text); font-weight: 600; margin-top: 2px; }
+
+/* controllo − N + inline */
+.inline-qty {
+  display: flex; align-items: center; gap: 0;
+  border: 1.5px solid var(--border-s);
+  border-radius: 24px; overflow: hidden;
+  background: var(--bg1);
+}
+.iq-btn {
+  width: 36px; height: 36px; border: none; background: transparent;
+  color: var(--text-pri); font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .1s; flex-shrink: 0;
+}
+.iq-btn:active { background: var(--border-s); }
+.iq-val {
+  min-width: 28px; text-align: center;
+  font-size: 15px; font-weight: 600;
+  color: var(--text-pri);
+}
+.iq-val.zero { color: var(--text-mut); }
+
+/* FAB comanda */
+.cart-fab {
+  position: fixed; bottom: 20px;
+  left: 50%; transform: translateX(-50%);
+  z-index: 200; background: var(--acc-fill); color: var(--acc-on);
+  border: none; border-radius: 32px;
+  padding: 15px 36px;
+  font-size: 17px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-md); transition: transform .15s, opacity .15s;
+  white-space: nowrap;
+}
+.cart-fab:active { transform: translateX(-50%) scale(.97); }
+.cart-fab .cart-count {
+  background: rgba(255,255,255,.28); border-radius: 14px;
+  padding: 2px 10px; font-size: 15px;
+}
 .cart-fab.hidden { display: none; }
 
+/* Cart overlay drawer */
 .cart-overlay {
   display: none; position: fixed; inset: 0; z-index: 300;
   flex-direction: column; background: var(--bg0);
@@ -158,7 +235,7 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .qty-btn:active { background: var(--border-s); }
-.qty-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
+.qty-val-c { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
 .cart-item-price { font-size: 14px; color: var(--text-sec); min-width: 52px; text-align: right; }
 .cart-footer { padding: 14px; background: var(--bg2); border-top: 1px solid var(--border); }
 .cart-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
@@ -169,14 +246,14 @@ body {
   resize: none; font-family: inherit;
 }
 .send-btn {
-  width: 100%; padding: 14px; border-radius: var(--radius); border: none;
+  width: 100%; padding: 15px; border-radius: var(--radius); border: none;
   background: var(--acc-fill); color: var(--acc-on);
-  font-size: 17px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity .15s;
 }
 .send-btn:disabled { opacity: .35; cursor: default; }
 
 /* ════ CUCINA ════ */
-#screen-cucina { min-height: calc(100vh - 53px); }
+#screen-cucina { min-height: calc(100vh - 48px); }
 .cucina-toolbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 20px; background: var(--bg2);
@@ -190,14 +267,12 @@ body {
 .refresh-btn {
   padding: 7px 14px; border-radius: var(--radius);
   border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-sec); font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: background .1s;
+  color: var(--text-sec); font-size: 13px; font-weight: 500; cursor: pointer;
 }
 .refresh-btn:hover { background: var(--bg1); }
 .last-update { font-size: 12px; color: var(--text-mut); }
 .cucina-kanban {
-  flex: 1; display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 16px; padding: 16px 20px; overflow-y: auto; align-items: start;
 }
 .kanban-col { display: flex; flex-direction: column; }
@@ -229,7 +304,7 @@ body {
 }
 .comanda-piatti { font-size: 14px; line-height: 1.9; margin-bottom: 8px; }
 .piatto-line { display: flex; gap: 8px; }
-.piatto-qty { font-weight: 700; color: var(--text-pri); min-width: 20px; }
+.piatto-qty { font-weight: 700; min-width: 20px; }
 .piatto-name { color: var(--text-sec); }
 .comanda-note {
   font-size: 12px; color: var(--text-mut); font-style: italic;
@@ -249,13 +324,12 @@ body {
 .stato-btn.chiudi    { color: var(--dang-text); border-color: var(--dang-bord); }
 .stato-btn.chiudi:hover { background: var(--dang-bg); }
 .kanban-empty { padding: 20px 14px; text-align: center; color: var(--text-mut); font-size: 13px; }
-
 @media (max-width: 700px) {
   .cucina-kanban { grid-template-columns: 1fr; padding: 10px 12px; }
 }
 
 /* ════ MENU MANAGER ════ */
-#screen-menu { min-height: calc(100vh - 53px); }
+#screen-menu { min-height: calc(100vh - 48px); }
 .menu-manager-wrap { max-width: 720px; margin: 0 auto; padding: 16px 14px; width: 100%; }
 .section-label {
   font-size: 11px; font-weight: 700; letter-spacing: .08em;
@@ -289,7 +363,7 @@ body {
 .add-dish-btn {
   width: 100%; padding: 11px; border-radius: var(--radius); border: none;
   background: var(--acc-fill); color: var(--acc-on);
-  font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s;
+  font-size: 15px; font-weight: 600; cursor: pointer;
 }
 .add-dish-btn:hover { opacity: .88; }
 .dish-list-item {
@@ -316,7 +390,7 @@ body {
   border-radius: var(--radius); background: transparent;
   color: var(--dang-text); cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0; transition: background .1s;
+  font-size: 16px; flex-shrink: 0;
 }
 .dish-delete:hover { background: var(--dang-bg); }
 .no-dishes {
@@ -327,7 +401,7 @@ body {
 
 /* ── TOAST ── */
 #toast {
-  position: fixed; bottom: 80px; left: 50%;
+  position: fixed; bottom: 90px; left: 50%;
   transform: translateX(-50%);
   background: #1a1916; color: #f0ede8;
   padding: 9px 18px; border-radius: var(--radius);
@@ -342,26 +416,49 @@ body {
 </head>
 <body>
 
+<!-- ── TOPBAR ── -->
 <nav class="topbar">
-  <span class="topbar-title">🍽 Ordinazioni GDA</span>
-  <span class="sync-dot" id="sync-dot" title="Connessione"></span>
-  <button class="tab-btn active" id="tab-cam"  onclick="showTab('cameriere')">👤 Cameriere</button>
-  <button class="tab-btn"        id="tab-cuc"  onclick="showTab('cucina')">👨‍🍳 Cucina</button>
-  <button class="tab-btn"        id="tab-menu" onclick="showTab('menu')">📋 Menu</button>
+  <div class="topbar-title">
+    GDA <span class="sync-dot" id="sync-dot"></span>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-bar-btn active" id="tab-sala"  onclick="showTab('cameriere')">Sala</button>
+    <button class="tab-bar-btn"        id="tab-cuci"  onclick="showTab('cucina')">Cucina</button>
+    <button class="tab-bar-btn"        id="tab-menu"  onclick="showTab('menu')">Menu</button>
+  </div>
 </nav>
 
-<!-- CAMERIERE -->
+<!-- ══════════════ CAMERIERE ══════════════ -->
 <div id="screen-cameriere" class="screen visible">
+
+  <!-- barra tavolo -->
   <div class="cam-tavolo-bar">
     <label for="sel-tavolo">Tavolo</label>
     <select id="sel-tavolo" onchange="updateFab()">
       <option value="">— seleziona —</option>
     </select>
   </div>
-  <div class="cam-menu" id="cam-menu"></div>
-  <button class="cart-fab hidden" id="cart-fab" onclick="openCart()" aria-label="Apri comanda">
-    🛒 Comanda <span class="cart-count" id="cart-count">0</span>
+
+  <!-- LIVELLO 1: griglia categorie -->
+  <div class="cam-level" id="cam-level-1">
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+  <!-- LIVELLO 2: piatti categoria -->
+  <div class="cam-level hidden" id="cam-level-2">
+    <div class="cam-piatti-header">
+      <button class="back-btn" onclick="goBackToCategories()" aria-label="Indietro">←</button>
+      <span class="cam-piatti-title" id="cam-piatti-title">Antipasti</span>
+    </div>
+    <div class="cam-piatti-list" id="cam-piatti-list"></div>
+  </div>
+
+  <!-- FAB comanda -->
+  <button class="cart-fab hidden" id="cart-fab" onclick="openCart()">
+    Comanda <span class="cart-count" id="cart-count">0</span>
   </button>
+
+  <!-- Cart overlay -->
   <div class="cart-overlay" id="cart-overlay" role="dialog" aria-modal="true">
     <div class="cart-header">
       <h2>Comanda</h2>
@@ -378,7 +475,7 @@ body {
   </div>
 </div>
 
-<!-- CUCINA -->
+<!-- ══════════════ CUCINA ══════════════ -->
 <div id="screen-cucina" class="screen">
   <div class="cucina-toolbar">
     <div class="cucina-stats">
@@ -407,7 +504,7 @@ body {
   </div>
 </div>
 
-<!-- MENU -->
+<!-- ══════════════ MENU ══════════════ -->
 <div id="screen-menu" class="screen">
   <div style="overflow-y:auto;flex:1">
     <div class="menu-manager-wrap">
@@ -432,10 +529,9 @@ body {
 
 <div id="toast"></div>
 
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-/* ── SUPABASE CONFIG ── */
+/* ── SUPABASE ── */
 const SUPA_URL = 'https://sptwxscoqzbazpojgikv.supabase.co';
 const SUPA_KEY = 'sb_publishable_Kmndi3DKhim7hNM1V8maEQ_b17Hl2YA';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
@@ -447,57 +543,61 @@ let comande = [];
 let cucinaSeenIds = new Set();
 const NUM_TAVOLI = 20;
 
-/* ── SYNC DOT ── */
-function setSyncState(s) {
-  const d = document.getElementById('sync-dot');
-  d.className = 'sync-dot ' + s;
-  d.title = {online:'Connesso',error:'Errore connessione',syncing:'Sincronizzazione...'}[s]||'';
-}
+/* categorie fisse con emoji */
+const CAT_CONFIG = [
+  { name: 'Antipasti', emoji: '🥗' },
+  { name: 'Primi',     emoji: '🍝' },
+  { name: 'Secondi',   emoji: '🥩' },
+  { name: 'Dessert',   emoji: '🍮' },
+  { name: 'Bevande',   emoji: '🍷' },
+  { name: 'Bar',       emoji: '☕' },
+];
 
 /* ── HELPERS ── */
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function getCategories(){ return [...new Set(menu.map(d=>d.cat))]; }
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.opacity = 1;
-  clearTimeout(t._t); t._t = setTimeout(()=>{ t.style.opacity=0; }, 2400);
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity=1;
+  clearTimeout(t._t); t._t=setTimeout(()=>{t.style.opacity=0;},2400);
+}
+function setSyncState(s){
+  const d=document.getElementById('sync-dot'); d.className='sync-dot '+s;
 }
 
 /* ── TAB ── */
-function showTab(tab) {
+function showTab(tab){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('visible'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-bar-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+tab).classList.add('visible');
-  document.getElementById('tab-'+tab.substring(0,3)).classList.add('active');
+  const tabMap={cameriere:'sala',cucina:'cuci',menu:'menu'};
+  document.getElementById('tab-'+tabMap[tab]).classList.add('active');
   if(tab==='cucina') loadCucina();
 }
 
-/* ════ INIT ════ */
-async function init() {
+/* ── INIT ── */
+async function init(){
   setSyncState('syncing');
-  // populate tavoli
-  const sel = document.getElementById('sel-tavolo');
-  for(let i=1;i<=NUM_TAVOLI;i++) sel.innerHTML += `<option value="${i}">Tavolo ${i}</option>`;
-
+  const sel=document.getElementById('sel-tavolo');
+  for(let i=1;i<=NUM_TAVOLI;i++) sel.innerHTML+=`<option value="${i}">Tavolo ${i}</option>`;
   await loadMenu();
-  await loadCucina();
   subscribeRealtime();
 }
 
-/* ════ MENU (Supabase) ════ */
-async function loadMenu() {
+/* ── MENU (Supabase) ── */
+async function loadMenu(){
   setSyncState('syncing');
-  const { data, error } = await sb.from('menu').select('*').order('sort_order').order('id');
-  if(error) { setSyncState('error'); showToast('❌ Errore caricamento menu'); return; }
-  menu = data.length ? data : await seedDefaultMenu();
+  const {data,error}=await sb.from('menu').select('*').order('sort_order').order('id');
+  if(error){setSyncState('error');showToast('❌ Errore caricamento menu');return;}
+  menu=data.length?data:await seedDefaultMenu();
   setSyncState('online');
-  renderCamMenu();
+  renderCatGrid();
   renderDishList();
   renderCatSelect();
 }
 
-async function seedDefaultMenu() {
-  const defaults = [
+async function seedDefaultMenu(){
+  const defaults=[
     {id:'p1',cat:'Antipasti',name:'Bruschetta al pomodoro',price:6,sort_order:1},
     {id:'p2',cat:'Antipasti',name:'Tagliere misto',price:12,sort_order:2},
     {id:'p3',cat:'Primi',name:'Spaghetti al pomodoro',price:10,sort_order:3},
@@ -513,45 +613,105 @@ async function seedDefaultMenu() {
   return defaults;
 }
 
-async function saveMenuOrder() {
-  const updates = menu.map((d,i)=>({...d, sort_order:i}));
+async function saveMenuOrder(){
+  const updates=menu.map((d,i)=>({...d,sort_order:i}));
   await sb.from('menu').upsert(updates);
 }
 
-/* ════ CAMERIERE ════ */
-function renderCamMenu() {
-  const cats = getCategories();
-  const el = document.getElementById('cam-menu');
-  el.innerHTML = cats.map(cat => {
-    const piatti = menu.filter(d=>d.cat===cat);
-    return `<div class="cam-cat-header">${esc(cat)}</div>` +
-      piatti.map(p=>`
-        <div class="cam-menu-item" onclick="addToOrder('${p.id}')">
-          <div class="cam-item-info">
-            <div class="cam-item-name">${esc(p.name)}</div>
-            <div class="cam-item-price">€${Number(p.price).toFixed(2)}</div>
-          </div>
-          <button class="cam-add-btn" onclick="event.stopPropagation();addToOrder('${p.id}')" aria-label="Aggiungi">+</button>
-        </div>`).join('');
+/* ════ CAMERIERE – livello 1 ════ */
+function renderCatGrid(){
+  const grid=document.getElementById('cat-grid');
+  grid.innerHTML=CAT_CONFIG.map(cfg=>{
+    const count=countOrderInCat(cfg.name);
+    return `<div class="cat-box" onclick="openCategory('${esc(cfg.name)}')">
+      <span class="cat-box-emoji">${cfg.emoji}</span>
+      <span class="cat-box-name">${cfg.name}</span>
+      <span class="cat-box-count ${count>0?'visible':''}" id="cbox-count-${esc(cfg.name)}">${count}</span>
+    </div>`;
   }).join('');
 }
 
-function addToOrder(id){ order[id]=(order[id]||0)+1; updateFab(); renderCart(); }
+function countOrderInCat(cat){
+  return menu.filter(p=>p.cat===cat).reduce((sum,p)=>sum+(order[p.id]||0),0);
+}
+
+function refreshCatCounts(){
+  CAT_CONFIG.forEach(cfg=>{
+    const el=document.getElementById('cbox-count-'+cfg.name);
+    if(!el) return;
+    const count=countOrderInCat(cfg.name);
+    el.textContent=count;
+    el.classList.toggle('visible',count>0);
+  });
+}
+
+/* ════ CAMERIERE – livello 2 ════ */
+function openCategory(cat){
+  document.getElementById('cam-level-1').classList.add('hidden');
+  document.getElementById('cam-level-2').classList.remove('hidden');
+  document.getElementById('cam-piatti-title').textContent=cat;
+  renderPiattiList(cat);
+}
+
+function goBackToCategories(){
+  document.getElementById('cam-level-2').classList.add('hidden');
+  document.getElementById('cam-level-1').classList.remove('hidden');
+  refreshCatCounts();
+}
+
+function renderPiattiList(cat){
+  const piatti=menu.filter(p=>p.cat===cat);
+  const el=document.getElementById('cam-piatti-list');
+  if(!piatti.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mut);font-size:14px">Nessun piatto in questa categoria</div>';
+    return;
+  }
+  el.innerHTML=piatti.map(p=>{
+    const qty=order[p.id]||0;
+    return `<div class="cam-piatto-row">
+      <div class="cam-piatto-info">
+        <div class="cam-piatto-name">${esc(p.name)}</div>
+        <div class="cam-piatto-price">€${Number(p.price).toFixed(2)}</div>
+      </div>
+      <div class="inline-qty" id="iqw-${p.id}">
+        <button class="iq-btn" onclick="changeQty('${p.id}',-1)">−</button>
+        <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
+        <button class="iq-btn" onclick="changeQty('${p.id}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function changeQty(id,delta){
   order[id]=(order[id]||0)+delta;
   if(order[id]<=0) delete order[id];
-  updateFab(); renderCart();
+  // aggiorna solo il contatore inline
+  const valEl=document.getElementById('iq-'+id);
+  if(valEl){
+    const qty=order[id]||0;
+    valEl.textContent=qty;
+    valEl.className='iq-val'+(qty===0?' zero':'');
+  }
+  updateFab();
+  renderCart();
 }
+
 function updateFab(){
   const total=Object.values(order).reduce((a,b)=>a+b,0);
   const fab=document.getElementById('cart-fab');
   const tv=document.getElementById('sel-tavolo').value;
-  if(total>0&&tv){ fab.classList.remove('hidden'); document.getElementById('cart-count').textContent=total; }
-  else fab.classList.add('hidden');
+  if(total>0&&tv){
+    fab.classList.remove('hidden');
+    document.getElementById('cart-count').textContent=total;
+  } else {
+    fab.classList.add('hidden');
+  }
   document.getElementById('send-btn').disabled=total===0||!tv;
 }
+
 function openCart(){ renderCart(); document.getElementById('cart-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeCart(){ document.getElementById('cart-overlay').classList.remove('open'); document.body.style.overflow=''; }
+
 function renderCart(){
   const el=document.getElementById('cart-body');
   const ids=Object.keys(order);
@@ -561,15 +721,29 @@ function renderCart(){
     return `<div class="cart-item">
       <div class="cart-item-name">${esc(p.name)}</div>
       <div class="qty-ctrl">
-        <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
-        <span class="qty-val">${order[id]}</span>
-        <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+        <button class="qty-btn" onclick="cartChangeQty('${id}',-1)">−</button>
+        <span class="qty-val-c">${order[id]}</span>
+        <button class="qty-btn" onclick="cartChangeQty('${id}',1)">+</button>
       </div>
       <div class="cart-item-price">€${(Number(p.price)*order[id]).toFixed(2)}</div>
     </div>`;
   }).join('');
   setTotal();
 }
+
+function cartChangeQty(id,delta){
+  order[id]=(order[id]||0)+delta;
+  if(order[id]<=0) delete order[id];
+  updateFab(); renderCart();
+  // aggiorna anche il contatore nella lista piatti se visibile
+  const valEl=document.getElementById('iq-'+id);
+  if(valEl){
+    const qty=order[id]||0;
+    valEl.textContent=qty;
+    valEl.className='iq-val'+(qty===0?' zero':'');
+  }
+}
+
 function setTotal(){
   let tot=0;
   for(const id in order){ const p=menu.find(x=>x.id===id); if(p) tot+=Number(p.price)*order[id]; }
@@ -582,17 +756,18 @@ async function sendComanda(){
   const note=document.getElementById('order-note').value.trim();
   const piatti=Object.entries(order).map(([id,qty])=>{
     const p=menu.find(x=>x.id===id);
-    return {name:p?p.name:id, qty, price:p?Number(p.price):0};
+    return {name:p?p.name:id,qty,price:p?Number(p.price):0};
   });
-  const c={id:'c'+Date.now(), tavolo:tv, piatti, note, stato:'attesa', ts:Date.now()};
+  const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'attesa',ts:Date.now()};
   setSyncState('syncing');
   const {error}=await sb.from('comande').insert(c);
-  if(error){ setSyncState('error'); showToast('❌ Errore invio comanda'); return; }
+  if(error){setSyncState('error');showToast('❌ Errore invio comanda');return;}
   setSyncState('online');
   order={};
   document.getElementById('order-note').value='';
   document.getElementById('sel-tavolo').value='';
   closeCart(); updateFab(); renderCart();
+  renderCatGrid();
   showToast('✅ Comanda tavolo '+tv+' inviata!');
 }
 
@@ -600,7 +775,7 @@ async function sendComanda(){
 async function loadCucina(){
   setSyncState('syncing');
   const {data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
-  if(error){ setSyncState('error'); return; }
+  if(error){setSyncState('error');return;}
   comande=data||[];
   setSyncState('online');
   renderCucina();
@@ -609,7 +784,7 @@ async function loadCucina(){
 function renderCucina(){
   document.getElementById('last-update').textContent='Aggiornato: '+new Date().toLocaleTimeString('it-IT');
   const cols={attesa:[],preparazione:[],pronto:[]};
-  comande.forEach(c=>{ if(cols[c.stato]) cols[c.stato].push(c); });
+  comande.forEach(c=>{if(cols[c.stato]) cols[c.stato].push(c);});
   document.getElementById('stat-attesa').textContent='⏳ '+cols.attesa.length+' in attesa';
   document.getElementById('stat-prep').textContent  ='👨‍🍳 '+cols.preparazione.length+' in prep.';
   document.getElementById('stat-pronto').textContent='✅ '+cols.pronto.length+' pronti';
@@ -623,7 +798,7 @@ function renderCucina(){
 
 function renderKanbanCol(elId,cards){
   const el=document.getElementById(elId);
-  if(!cards.length){ el.innerHTML='<div class="kanban-empty">Nessuna comanda</div>'; return; }
+  if(!cards.length){el.innerHTML='<div class="kanban-empty">Nessuna comanda</div>';return;}
   const btnCls={attesa:'on-attesa',preparazione:'on-prep',pronto:'on-pronto'};
   el.innerHTML=cards.map(c=>{
     const isNew=!cucinaSeenIds.has(c.id); if(isNew) cucinaSeenIds.add(c.id);
@@ -640,9 +815,9 @@ function renderKanbanCol(elId,cards){
       </div>
       ${c.note?`<div class="comanda-note">📝 ${esc(c.note)}</div>`:''}
       <div class="stato-btns">
-        <button class="stato-btn ${c.stato==='attesa'?btnCls.attesa:''}"          onclick="setStato('${c.id}','attesa')">⏳ Attesa</button>
+        <button class="stato-btn ${c.stato==='attesa'?btnCls.attesa:''}"             onclick="setStato('${c.id}','attesa')">⏳ Attesa</button>
         <button class="stato-btn ${c.stato==='preparazione'?btnCls.preparazione:''}" onclick="setStato('${c.id}','preparazione')">👨‍🍳 In prep.</button>
-        <button class="stato-btn ${c.stato==='pronto'?btnCls.pronto:''}"          onclick="setStato('${c.id}','pronto')">✅ Pronto</button>
+        <button class="stato-btn ${c.stato==='pronto'?btnCls.pronto:''}"             onclick="setStato('${c.id}','pronto')">✅ Pronto</button>
         <button class="stato-btn chiudi" onclick="setStato('${c.id}','completato')">✓ Chiudi</button>
       </div>
     </div>`;
@@ -652,20 +827,18 @@ function renderKanbanCol(elId,cards){
 async function setStato(id,stato){
   setSyncState('syncing');
   const {error}=await sb.from('comande').update({stato}).eq('id',id);
-  if(error){ setSyncState('error'); showToast('❌ Errore aggiornamento'); return; }
+  if(error){setSyncState('error');showToast('❌ Errore');return;}
   setSyncState('online');
   await loadCucina();
 }
 
 /* ════ REALTIME ════ */
 function subscribeRealtime(){
-  sb.channel('comande-changes')
-    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},()=>{
-      loadCucina();
-    })
-    .subscribe(status=>{
-      if(status==='SUBSCRIBED') setSyncState('online');
-      else if(status==='CLOSED'||status==='CHANNEL_ERROR') setSyncState('error');
+  sb.channel('comande-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},()=>{ loadCucina(); })
+    .subscribe(s=>{
+      if(s==='SUBSCRIBED') setSyncState('online');
+      else if(s==='CLOSED'||s==='CHANNEL_ERROR') setSyncState('error');
     });
 }
 
@@ -679,18 +852,18 @@ function renderCatSelect(){
 
 function renderDishList(){
   const el=document.getElementById('dish-list');
-  if(!menu.length){ el.innerHTML='<div class="no-dishes">Nessun piatto. Aggiungine uno sopra!</div>'; return; }
+  if(!menu.length){el.innerHTML='<div class="no-dishes">Nessun piatto. Aggiungine uno sopra!</div>';return;}
   el.innerHTML=menu.map((d,i)=>`
     <div class="dish-list-item">
       <div class="dish-order-btns">
-        <button class="dish-ord-btn" onclick="moveDish(${i},-1)" aria-label="Su">▲</button>
-        <button class="dish-ord-btn" onclick="moveDish(${i},1)"  aria-label="Giù">▼</button>
+        <button class="dish-ord-btn" onclick="moveDish(${i},-1)">▲</button>
+        <button class="dish-ord-btn" onclick="moveDish(${i},1)">▼</button>
       </div>
       <div class="dish-info">
         <div class="dish-name">${esc(d.name)}</div>
         <div class="dish-meta">${esc(d.cat)} · €${Number(d.price).toFixed(2)}</div>
       </div>
-      <button class="dish-delete" onclick="deleteDish('${d.id}')" aria-label="Elimina">🗑</button>
+      <button class="dish-delete" onclick="deleteDish('${d.id}')">🗑</button>
     </div>`).join('');
 }
 
@@ -702,13 +875,13 @@ async function addDish(){
   const cat   =catNew||catSel;
   const errEl =document.getElementById('add-dish-err');
   errEl.textContent='';
-  if(!name)                { errEl.textContent='Inserisci il nome del piatto.'; return; }
-  if(isNaN(price)||price<0){ errEl.textContent='Inserisci un prezzo valido.';  return; }
-  if(!cat)                 { errEl.textContent='Seleziona o crea una categoria.'; return; }
-  const newDish={id:'p'+Date.now(), cat, name, price, sort_order: menu.length};
+  if(!name)                {errEl.textContent='Inserisci il nome del piatto.';return;}
+  if(isNaN(price)||price<0){errEl.textContent='Inserisci un prezzo valido.';return;}
+  if(!cat)                 {errEl.textContent='Seleziona o crea una categoria.';return;}
+  const newDish={id:'p'+Date.now(),cat,name,price,sort_order:menu.length};
   setSyncState('syncing');
   const {error}=await sb.from('menu').insert(newDish);
-  if(error){ setSyncState('error'); showToast('❌ Errore salvataggio'); return; }
+  if(error){setSyncState('error');showToast('❌ Errore salvataggio');return;}
   setSyncState('online');
   document.getElementById('dish-name').value='';
   document.getElementById('dish-price').value='';
