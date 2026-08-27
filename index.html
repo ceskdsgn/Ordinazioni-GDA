@@ -7,466 +7,227 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
-
 :root {
-  --bg0: #f0ede8; --bg1: #f8f6f3; --bg2: #ffffff;
-  --text-pri: #1a1916; --text-sec: #6b6860; --text-mut: #a09e9a;
-  --border: #e2dfd9; --border-s: #c8c4bd;
-  --acc-fill: #2563eb; --acc-on: #ffffff; --acc-bg: #eff6ff;
-  --acc-text: #1d4ed8; --acc-bord: #bfdbfe;
-  --warn-bg: #fffbeb; --warn-text: #92400e; --warn-bord: #fcd34d;
-  --succ-bg: #f0fdf4; --succ-text: #166534; --succ-bord: #bbf7d0;
-  --dang-fill: #dc2626; --dang-on: #ffffff;
-  --dang-bg: #fef2f2; --dang-text: #991b1b; --dang-bord: #fecaca;
-  --radius: 8px; --shadow-md: 0 4px 12px rgba(0,0,0,.12);
+  --bg0:#f0ede8;--bg1:#f8f6f3;--bg2:#ffffff;
+  --text-pri:#1a1916;--text-sec:#6b6860;--text-mut:#a09e9a;
+  --border:#e2dfd9;--border-s:#c8c4bd;
+  --acc-fill:#2563eb;--acc-on:#ffffff;--acc-bg:#eff6ff;--acc-text:#1d4ed8;--acc-bord:#bfdbfe;
+  --warn-bg:#fffbeb;--warn-text:#92400e;--warn-bord:#fcd34d;
+  --succ-bg:#f0fdf4;--succ-text:#166534;--succ-bord:#bbf7d0;
+  --dang-fill:#dc2626;--dang-on:#ffffff;--dang-bg:#fef2f2;--dang-text:#991b1b;--dang-bord:#fecaca;
+  --radius:8px;--shadow-md:0 4px 12px rgba(0,0,0,.12);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg0: #1a1916; --bg1: #222220; --bg2: #2c2c29;
-    --text-pri: #f0ede8; --text-sec: #9e9b96; --text-mut: #6b6860;
-    --border: #38362f; --border-s: #4a4842;
-    --acc-fill: #3b82f6; --acc-on: #ffffff; --acc-bg: #1e3a5f;
-    --acc-text: #93c5fd; --acc-bord: #1e40af;
-    --warn-bg: #2d2000; --warn-text: #fcd34d; --warn-bord: #92400e;
-    --succ-bg: #052e16; --succ-text: #86efac; --succ-bord: #166534;
-    --dang-fill: #ef4444; --dang-on: #fff;
-    --dang-bg: #2d0707; --dang-text: #fca5a5; --dang-bord: #991b1b;
-  }
-}
+@media(prefers-color-scheme:dark){:root{
+  --bg0:#1a1916;--bg1:#222220;--bg2:#2c2c29;
+  --text-pri:#f0ede8;--text-sec:#9e9b96;--text-mut:#6b6860;
+  --border:#38362f;--border-s:#4a4842;
+  --acc-fill:#3b82f6;--acc-on:#ffffff;--acc-bg:#1e3a5f;--acc-text:#93c5fd;--acc-bord:#1e40af;
+  --warn-bg:#2d2000;--warn-text:#fcd34d;--warn-bord:#92400e;
+  --succ-bg:#052e16;--succ-text:#86efac;--succ-bord:#166534;
+  --dang-fill:#ef4444;--dang-on:#fff;--dang-bg:#2d0707;--dang-text:#fca5a5;--dang-bord:#991b1b;
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg0);color:var(--text-pri);font-size:16px;line-height:1.5;}
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg0); color: var(--text-pri);
-  font-size: 16px; line-height: 1.5;
-}
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.topbar-title{font-size:15px;font-weight:600;padding:0 14px;white-space:nowrap;color:var(--text-pri);border-right:1px solid var(--border);height:48px;display:flex;align-items:center;gap:6px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#6b6860;display:inline-block;flex-shrink:0;transition:background .3s;}
+.sync-dot.online{background:#16a34a;}.sync-dot.error{background:#dc2626;}.sync-dot.syncing{background:#d97706;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tab-bar{flex:1;display:flex;height:48px;}
+.tab-bar-btn{flex:1;height:100%;border:none;background:transparent;color:var(--text-sec);font-size:14px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s;}
+.tab-bar-btn:hover{color:var(--text-pri);background:var(--bg1);}
+.tab-bar-btn.active{color:var(--acc-fill);border-bottom-color:var(--acc-fill);font-weight:600;}
+.tab-bar-btn+.tab-bar-btn{border-left:1px solid var(--border);}
+.screen{display:none;}
+.screen.visible{display:flex;flex-direction:column;}
 
-/* ── TOPBAR con tab unica ── */
-.topbar {
-  display: flex; align-items: center;
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
-}
-.topbar-title {
-  font-size: 15px; font-weight: 600;
-  padding: 0 14px; white-space: nowrap; color: var(--text-pri);
-  border-right: 1px solid var(--border);
-  height: 48px; display: flex; align-items: center; gap: 6px;
-}
-.sync-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #6b6860; display: inline-block; flex-shrink: 0;
-  transition: background .3s;
-}
-.sync-dot.online  { background: #16a34a; }
-.sync-dot.error   { background: #dc2626; }
-.sync-dot.syncing { background: #d97706; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-/* Tab bar */
-.tab-bar {
-  flex: 1; display: flex; height: 48px;
-}
-.tab-bar-btn {
-  flex: 1; height: 100%; border: none; background: transparent;
-  color: var(--text-sec); font-size: 14px; font-weight: 500;
-  cursor: pointer; position: relative; transition: color .15s;
-  border-bottom: 2px solid transparent;
-  letter-spacing: .01em;
-}
-.tab-bar-btn:hover { color: var(--text-pri); background: var(--bg1); }
-.tab-bar-btn.active {
-  color: var(--acc-fill); border-bottom-color: var(--acc-fill);
-  font-weight: 600;
-}
-.tab-bar-btn + .tab-bar-btn { border-left: 1px solid var(--border); }
-
-.screen { display: none; }
-.screen.visible { display: flex; flex-direction: column; }
-
-/* ════ CAMERIERE – livello 1: griglia categorie ════ */
-#screen-cameriere { min-height: calc(100vh - 48px); flex-direction: column; }
-
-.cam-tavolo-bar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 48px; z-index: 90;
-}
-.cam-tavolo-bar label { font-size: 14px; font-weight: 500; color: var(--text-sec); white-space: nowrap; }
-.cam-tavolo-bar select {
-  flex: 1; padding: 8px 10px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: var(--bg1);
-  color: var(--text-pri); font-size: 15px;
-  -webkit-appearance: none; appearance: none;
-}
-
-/* Livello 1: box categorie */
-.cam-level { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.cam-level.hidden { display: none; }
-
-.cat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  padding: 16px 14px;
-}
-.cat-box {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px 12px 20px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 10px; cursor: pointer;
-  transition: background .15s, transform .1s;
-  -webkit-tap-highlight-color: transparent;
-  min-height: 110px; position: relative;
-}
-.cat-box:active { background: var(--acc-bg); transform: scale(.97); }
-.cat-box-emoji { font-size: 32px; line-height: 1; }
-.cat-box-name  { font-size: 15px; font-weight: 600; color: var(--text-pri); }
-.cat-box-count {
-  position: absolute; top: 10px; right: 10px;
-  background: var(--acc-fill); color: var(--acc-on);
-  font-size: 12px; font-weight: 700;
-  border-radius: 10px; padding: 1px 7px;
-  display: none;
-}
-.cat-box-count.visible { display: block; }
-
-/* Livello 2: lista piatti in categoria */
-.cam-piatti-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 97px; z-index: 85;
-}
-.back-btn {
-  width: 34px; height: 34px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-pri); font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.cam-piatti-title { font-size: 17px; font-weight: 600; flex: 1; }
-
-.cam-piatti-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-/* Piatto row con qty inline */
-.cam-piatto-row {
-  display: flex; align-items: center;
-  padding: 13px 14px; border-bottom: 1px solid var(--border);
-  background: var(--bg2); gap: 12px;
-}
-.cam-piatto-info { flex: 1; min-width: 0; }
-.cam-piatto-name { font-size: 16px; font-weight: 500; }
-.cam-piatto-price { font-size: 14px; color: var(--acc-text); font-weight: 600; margin-top: 2px; }
-
-/* controllo − N + inline */
-.inline-qty {
-  display: flex; align-items: center; gap: 0;
-  border: 1.5px solid var(--border-s);
-  border-radius: 24px; overflow: hidden;
-  background: var(--bg1);
-}
-.iq-btn {
-  width: 36px; height: 36px; border: none; background: transparent;
-  color: var(--text-pri); font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .1s; flex-shrink: 0;
-}
-.iq-btn:active { background: var(--border-s); }
-.iq-val {
-  min-width: 28px; text-align: center;
-  font-size: 15px; font-weight: 600;
-  color: var(--text-pri);
-}
-.iq-val.zero { color: var(--text-mut); }
-
-/* FAB comanda */
-.cart-fab {
-  position: fixed; bottom: 20px;
-  left: 50%; transform: translateX(-50%);
-  z-index: 200; background: var(--acc-fill); color: var(--acc-on);
-  border: none; border-radius: 32px;
-  padding: 15px 36px;
-  font-size: 17px; font-weight: 700;
-  cursor: pointer; display: flex; align-items: center; gap: 10px;
-  box-shadow: var(--shadow-md); transition: transform .15s, opacity .15s;
-  white-space: nowrap;
-}
-.cart-fab:active { transform: translateX(-50%) scale(.97); }
-.cart-fab .cart-count {
-  background: rgba(255,255,255,.28); border-radius: 14px;
-  padding: 2px 10px; font-size: 15px;
-}
-.cart-fab.hidden { display: none; }
-
-/* Cart overlay drawer */
-.cart-overlay {
-  display: none; position: fixed; inset: 0; z-index: 300;
-  flex-direction: column; background: var(--bg0);
-}
-.cart-overlay.open { display: flex; }
-.cart-header {
-  display: flex; align-items: center; padding: 14px;
-  background: var(--bg2); border-bottom: 1px solid var(--border); gap: 10px;
-}
-.cart-header h2 { font-size: 18px; font-weight: 600; flex: 1; }
-.cart-close {
-  width: 34px; height: 34px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-pri); font-size: 20px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.cart-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.cart-empty { text-align: center; padding: 40px 20px; color: var(--text-mut); font-size: 15px; }
-.cart-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 14px; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-}
-.cart-item-name { flex: 1; font-size: 16px; }
-.qty-ctrl { display: flex; align-items: center; gap: 8px; }
-.qty-btn {
-  width: 30px; height: 30px; border-radius: 50%;
-  border: 1px solid var(--border-s); background: var(--bg1);
-  color: var(--text-pri); font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.qty-btn:active { background: var(--border-s); }
-.qty-val-c { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
-.cart-item-price { font-size: 14px; color: var(--text-sec); min-width: 52px; text-align: right; }
-.cart-footer { padding: 14px; background: var(--bg2); border-top: 1px solid var(--border); }
-.cart-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
-.cart-note {
-  width: 100%; padding: 8px 10px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: var(--bg1);
-  color: var(--text-pri); font-size: 15px; margin-bottom: 10px;
-  resize: none; font-family: inherit;
-}
-.send-btn {
-  width: 100%; padding: 15px; border-radius: var(--radius); border: none;
-  background: var(--acc-fill); color: var(--acc-on);
-  font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity .15s;
-}
-.send-btn:disabled { opacity: .35; cursor: default; }
+/* ════ CAMERIERE ════ */
+#screen-cameriere{height:calc(100vh - 48px);flex-direction:column;overflow:hidden;}
+.cam-tavolo-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.cam-tavolo-bar label{font-size:14px;font-weight:500;color:var(--text-sec);white-space:nowrap;}
+.cam-tavolo-bar select{flex:1;padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:15px;-webkit-appearance:none;appearance:none;}
+.cam-level{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.cam-level.hidden{display:none;}
+/* griglia categorie */
+.cat-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:12px;padding:12px 12px 90px;}
+.cat-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
+.cat-box:active{background:var(--acc-bg);transform:scale(.97);}
+.cat-box-emoji{font-size:40px;line-height:1;}
+.cat-box-name{font-size:18px;font-weight:700;color:var(--text-pri);}
+.cat-box-count{position:absolute;top:12px;right:12px;background:var(--acc-fill);color:var(--acc-on);font-size:13px;font-weight:700;border-radius:12px;padding:2px 9px;display:none;}
+.cat-box-count.visible{display:block;}
+/* livello 2 */
+#cam-level-2{display:flex;flex-direction:column;overflow:hidden;}
+#cam-level-2.hidden{display:none;}
+.cam-piatti-header{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.back-btn{width:40px;height:40px;border-radius:var(--radius);border:1px solid var(--border-s);background:transparent;color:var(--text-pri);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cam-piatti-title{font-size:20px;font-weight:700;flex:1;}
+.cam-piatti-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
+.cam-piatto-row{display:flex;align-items:center;padding:18px 16px;border-bottom:1px solid var(--border);background:var(--bg2);gap:14px;min-height:76px;}
+.cam-piatto-info{flex:1;min-width:0;}
+.cam-piatto-name{font-size:18px;font-weight:600;}
+.cam-piatto-price{font-size:16px;color:var(--acc-text);font-weight:600;margin-top:4px;}
+.inline-qty{display:flex;align-items:center;border:1.5px solid var(--border-s);border-radius:28px;overflow:hidden;background:var(--bg1);}
+.iq-btn{width:44px;height:44px;border:none;background:transparent;color:var(--text-pri);font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .1s;flex-shrink:0;}
+.iq-btn:active{background:var(--border-s);}
+.iq-val{min-width:34px;text-align:center;font-size:17px;font-weight:700;color:var(--text-pri);}
+.iq-val.zero{color:var(--text-mut);}
+/* FAB */
+.cart-fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;background:var(--acc-fill);color:var(--acc-on);border:none;border-radius:32px;padding:16px 40px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-md);transition:transform .15s,opacity .2s;white-space:nowrap;}
+.cart-fab:active{transform:translateX(-50%) scale(.97);}
+.cart-fab .cart-count{background:rgba(255,255,255,.28);border-radius:14px;padding:2px 10px;font-size:16px;font-weight:700;}
+.cart-fab.cart-count-zero .cart-count{display:none;}
+.cart-fab.hidden{opacity:0;pointer-events:none;}
+/* cart overlay */
+.cart-overlay{display:none;position:fixed;inset:0;z-index:300;flex-direction:column;background:var(--bg0);}
+.cart-overlay.open{display:flex;}
+.cart-header{display:flex;align-items:center;padding:14px;background:var(--bg2);border-bottom:1px solid var(--border);gap:10px;}
+.cart-header h2{font-size:18px;font-weight:600;flex:1;}
+.cart-close{width:34px;height:34px;border-radius:var(--radius);border:1px solid var(--border-s);background:transparent;color:var(--text-pri);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.cart-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.cart-empty{text-align:center;padding:40px 20px;color:var(--text-mut);font-size:15px;}
+.cart-item{display:flex;align-items:center;gap:10px;padding:13px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.cart-item-name{flex:1;font-size:16px;}
+.qty-ctrl{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qty-btn:active{background:var(--border-s);}
+.qty-val-c{font-size:16px;font-weight:600;min-width:20px;text-align:center;}
+.cart-item-price{font-size:14px;color:var(--text-sec);min-width:52px;text-align:right;}
+.cart-footer{padding:14px;background:var(--bg2);border-top:1px solid var(--border);}
+.cart-total{display:flex;justify-content:space-between;font-size:18px;font-weight:600;margin-bottom:10px;}
+.cart-note{width:100%;padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:15px;margin-bottom:10px;resize:none;font-family:inherit;}
+.send-btn{width:100%;padding:15px;border-radius:var(--radius);border:none;background:var(--acc-fill);color:var(--acc-on);font-size:17px;font-weight:700;cursor:pointer;}
+.send-btn:disabled{opacity:.35;cursor:default;}
 
 /* ════ CUCINA ════ */
-#screen-cucina { min-height: calc(100vh - 48px); }
-.cucina-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 20px; background: var(--bg2);
-  border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px;
-}
-.cucina-stats { display: flex; gap: 10px; flex-wrap: wrap; }
-.stat-pill { padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid; }
-.stat-attesa { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-bord); }
-.stat-prep   { background: var(--acc-bg);  color: var(--acc-text);  border-color: var(--acc-bord); }
-.stat-pronto { background: var(--succ-bg); color: var(--succ-text); border-color: var(--succ-bord); }
-.refresh-btn {
-  padding: 7px 14px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-sec); font-size: 13px; font-weight: 500; cursor: pointer;
-}
-.refresh-btn:hover { background: var(--bg1); }
-.last-update { font-size: 12px; color: var(--text-mut); }
-.cucina-kanban {
-  flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
-  gap: 16px; padding: 16px 20px; overflow-y: auto; align-items: start;
-}
-.kanban-col { display: flex; flex-direction: column; }
-.kanban-col-header {
-  font-size: 13px; font-weight: 700; letter-spacing: .06em;
-  text-transform: uppercase; padding: 10px 14px;
-  border-radius: var(--radius) var(--radius) 0 0;
-  border: 1px solid; border-bottom: none;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.kanban-col-header.attesa { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-bord); }
-.kanban-col-header.prep   { background: var(--acc-bg);  color: var(--acc-text);  border-color: var(--acc-bord); }
-.kanban-col-header.pronto { background: var(--succ-bg); color: var(--succ-text); border-color: var(--succ-bord); }
-.col-count { font-size: 12px; background: rgba(0,0,0,.12); border-radius: 10px; padding: 1px 7px; }
-.kanban-cards {
-  border: 1px solid var(--border-s); border-radius: 0 0 var(--radius) var(--radius);
-  background: var(--bg1); min-height: 60px;
-  display: flex; flex-direction: column; gap: 1px;
-}
-.comanda-card { background: var(--bg2); padding: 12px 14px; border-bottom: 1px solid var(--border); }
-.comanda-card:last-child { border-bottom: none; }
-.comanda-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.comanda-tavolo { font-size: 17px; font-weight: 700; }
-.comanda-time { font-size: 12px; color: var(--text-mut); margin-left: auto; }
-.new-badge {
-  background: var(--dang-fill); color: var(--dang-on);
-  font-size: 10px; font-weight: 700; padding: 2px 6px;
-  border-radius: 4px; letter-spacing: .04em;
-}
-.comanda-piatti { font-size: 14px; line-height: 1.9; margin-bottom: 8px; }
-.piatto-line { display: flex; gap: 8px; }
-.piatto-qty { font-weight: 700; min-width: 20px; }
-.piatto-name { color: var(--text-sec); }
-.comanda-note {
-  font-size: 12px; color: var(--text-mut); font-style: italic;
-  background: var(--bg1); border-radius: 4px; padding: 4px 8px; margin-bottom: 8px;
-}
-.stato-btns { display: flex; gap: 5px; flex-wrap: wrap; }
-.stato-btn {
-  flex: 1; min-width: 60px; padding: 5px 4px; border-radius: var(--radius);
-  border: 1px solid var(--border-s); background: transparent;
-  color: var(--text-sec); font-size: 12px; font-weight: 500;
-  cursor: pointer; transition: all .1s; text-align: center;
-}
-.stato-btn:hover { background: var(--bg0); }
-.stato-btn.on-attesa { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-bord); font-weight: 700; }
-.stato-btn.on-prep   { background: var(--acc-bg);  color: var(--acc-text);  border-color: var(--acc-bord); font-weight: 700; }
-.stato-btn.on-pronto { background: var(--succ-bg); color: var(--succ-text); border-color: var(--succ-bord); font-weight: 700; }
-.stato-btn.chiudi    { color: var(--dang-text); border-color: var(--dang-bord); }
-.stato-btn.chiudi:hover { background: var(--dang-bg); }
-.kanban-empty { padding: 20px 14px; text-align: center; color: var(--text-mut); font-size: 13px; }
-@media (max-width: 700px) {
-  .cucina-kanban { grid-template-columns: 1fr; padding: 10px 12px; }
-}
+#screen-cucina{min-height:calc(100vh - 48px);}
+.cucina-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.cucina-stats{display:flex;gap:10px;flex-wrap:wrap;}
+.stat-pill{padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid;}
+.stat-prep  {background:var(--acc-bg); color:var(--acc-text); border-color:var(--acc-bord);}
+.stat-pronto{background:var(--succ-bg);color:var(--succ-text);border-color:var(--succ-bord);}
+.refresh-btn{padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border-s);background:transparent;color:var(--text-sec);font-size:13px;font-weight:500;cursor:pointer;}
+.refresh-btn:hover{background:var(--bg1);}
+.last-update{font-size:12px;color:var(--text-mut);}
+/* cucina: 2 colonne invece di 3 */
+.cucina-kanban{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:16px 20px;overflow-y:auto;align-items:start;}
+.kanban-col{display:flex;flex-direction:column;}
+.kanban-col-header{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;border-radius:var(--radius) var(--radius) 0 0;border:1px solid;border-bottom:none;display:flex;align-items:center;justify-content:space-between;}
+.kanban-col-header.prep  {background:var(--acc-bg); color:var(--acc-text); border-color:var(--acc-bord);}
+.kanban-col-header.pronto{background:var(--succ-bg);color:var(--succ-text);border-color:var(--succ-bord);}
+.col-count{font-size:12px;background:rgba(0,0,0,.12);border-radius:10px;padding:1px 7px;}
+.kanban-cards{border:1px solid var(--border-s);border-radius:0 0 var(--radius) var(--radius);background:var(--bg1);min-height:60px;display:flex;flex-direction:column;gap:1px;}
+.comanda-card{background:var(--bg2);padding:12px 14px;border-bottom:1px solid var(--border);}
+.comanda-card:last-child{border-bottom:none;}
+.comanda-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.comanda-tavolo{font-size:17px;font-weight:700;}
+.comanda-time{font-size:12px;color:var(--text-mut);margin-left:auto;}
+.new-badge{background:var(--dang-fill);color:var(--dang-on);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.04em;}
+/* pietanze con tasto pronto per singola riga */
+.piatto-riga{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.piatto-riga:last-child{border-bottom:none;}
+.piatto-riga-info{flex:1;display:flex;gap:6px;align-items:baseline;}
+.piatto-riga-qty{font-weight:700;font-size:15px;min-width:24px;}
+.piatto-riga-name{font-size:15px;color:var(--text-sec);}
+.piatto-riga-name.done{text-decoration:line-through;color:var(--text-mut);}
+.piatto-pronto-btn{padding:4px 10px;border-radius:var(--radius);border:1px solid var(--succ-bord);background:transparent;color:var(--succ-text);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .1s;}
+.piatto-pronto-btn:hover{background:var(--succ-bg);}
+.piatto-pronto-btn.done{background:var(--succ-bg);border-color:var(--succ-bord);opacity:.5;cursor:default;}
+.comanda-note{font-size:12px;color:var(--text-mut);font-style:italic;background:var(--bg1);border-radius:4px;padding:4px 8px;margin-top:8px;}
+.piatti-progress{font-size:12px;color:var(--text-mut);margin-top:6px;}
+@media(max-width:700px){.cucina-kanban{grid-template-columns:1fr;padding:10px 12px;}}
+
+/* ════ TAVOLI ════ */
+#screen-tavoli{min-height:calc(100vh - 48px);}
+.tavoli-wrap{flex:1;overflow-y:auto;padding:14px;}
+.tavoli-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.tavolo-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.tavolo-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--acc-bg);border-bottom:1px solid var(--acc-bord);}
+.tavolo-card-num{font-size:17px;font-weight:700;color:var(--acc-text);}
+.tavolo-card-total{font-size:15px;font-weight:700;color:var(--acc-text);}
+.tavolo-card-body{padding:10px 14px;}
+.tavolo-piatto-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.tavolo-piatto-line:last-child{border-bottom:none;}
+.tavolo-piatto-name{flex:1;color:var(--text-sec);}
+.tavolo-piatto-qty{font-weight:600;color:var(--text-pri);margin:0 8px;}
+.tavolo-piatto-price{color:var(--text-sec);min-width:48px;text-align:right;}
+.tavolo-empty{text-align:center;padding:40px 20px;color:var(--text-mut);font-size:14px;}
+.tavoli-refresh{display:flex;justify-content:flex-end;padding:0 14px 10px;}
 
 /* ════ MENU MANAGER ════ */
-#screen-menu { min-height: calc(100vh - 48px); }
-.menu-manager-wrap { max-width: 720px; margin: 0 auto; padding: 16px 14px; width: 100%; }
-.section-label {
-  font-size: 11px; font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--text-sec);
-  margin-bottom: 10px; margin-top: 20px;
-}
-.section-label:first-child { margin-top: 0; }
-.add-dish-form {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.form-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.form-input {
-  flex: 2; min-width: 120px; padding: 9px 11px;
-  border-radius: var(--radius); border: 1px solid var(--border-s);
-  background: var(--bg1); color: var(--text-pri);
-  font-size: 15px; font-family: inherit;
-}
-.form-input:focus { outline: none; border-color: var(--acc-fill); box-shadow: 0 0 0 2px var(--acc-bg); }
-.form-input-sm { flex: 1; min-width: 90px; }
-.form-select {
-  flex: 1.5; min-width: 130px; padding: 9px 11px;
-  border-radius: var(--radius); border: 1px solid var(--border-s);
-  background: var(--bg1); color: var(--text-pri);
-  font-size: 15px; font-family: inherit;
-  -webkit-appearance: none; appearance: none;
-}
-.form-select:focus { outline: none; border-color: var(--acc-fill); }
-.err-msg { font-size: 13px; color: var(--dang-text); }
-.add-dish-btn {
-  width: 100%; padding: 11px; border-radius: var(--radius); border: none;
-  background: var(--acc-fill); color: var(--acc-on);
-  font-size: 15px; font-weight: 600; cursor: pointer;
-}
-.add-dish-btn:hover { opacity: .88; }
-.dish-list-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-}
-.dish-list-item:first-child { border-radius: 12px 12px 0 0; border-top: 1px solid var(--border); }
-.dish-list-item:last-child  { border-radius: 0 0 12px 12px; }
-.dish-list-item:only-child  { border-radius: 12px; border: 1px solid var(--border); }
-.dish-order-btns { display: flex; flex-direction: column; gap: 2px; }
-.dish-ord-btn {
-  width: 22px; height: 20px; border: 1px solid var(--border-s);
-  border-radius: 4px; background: var(--bg1); color: var(--text-sec);
-  font-size: 10px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.dish-ord-btn:hover { background: var(--border-s); }
-.dish-info { flex: 1; min-width: 0; }
-.dish-name { font-size: 15px; font-weight: 500; }
-.dish-meta { font-size: 13px; color: var(--text-sec); }
-.dish-delete {
-  width: 32px; height: 32px; border: 1px solid var(--dang-bord);
-  border-radius: var(--radius); background: transparent;
-  color: var(--dang-text); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.dish-delete:hover { background: var(--dang-bg); }
-.no-dishes {
-  padding: 24px; text-align: center; color: var(--text-mut);
-  font-size: 14px; background: var(--bg2);
-  border-radius: 12px; border: 1px solid var(--border);
-}
+#screen-menu{min-height:calc(100vh - 48px);}
+.menu-manager-wrap{max-width:720px;margin:0 auto;padding:16px 14px;width:100%;}
+.section-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-sec);margin-bottom:10px;margin-top:20px;}
+.section-label:first-child{margin-top:0;}
+.add-dish-form{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;}
+.form-input{flex:2;min-width:120px;padding:9px 11px;border-radius:var(--radius);border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:15px;font-family:inherit;}
+.form-input:focus{outline:none;border-color:var(--acc-fill);box-shadow:0 0 0 2px var(--acc-bg);}
+.form-input-sm{flex:1;min-width:90px;}
+.form-select{flex:1.5;min-width:130px;padding:9px 11px;border-radius:var(--radius);border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:15px;font-family:inherit;-webkit-appearance:none;appearance:none;}
+.form-select:focus{outline:none;border-color:var(--acc-fill);}
+.err-msg{font-size:13px;color:var(--dang-text);}
+.add-dish-btn{width:100%;padding:11px;border-radius:var(--radius);border:none;background:var(--acc-fill);color:var(--acc-on);font-size:15px;font-weight:600;cursor:pointer;}
+.add-dish-btn:hover{opacity:.88;}
+.dish-list-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.dish-list-item:first-child{border-radius:12px 12px 0 0;border-top:1px solid var(--border);}
+.dish-list-item:last-child{border-radius:0 0 12px 12px;}
+.dish-list-item:only-child{border-radius:12px;border:1px solid var(--border);}
+.dish-order-btns{display:flex;flex-direction:column;gap:2px;}
+.dish-ord-btn{width:22px;height:20px;border:1px solid var(--border-s);border-radius:4px;background:var(--bg1);color:var(--text-sec);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.dish-ord-btn:hover{background:var(--border-s);}
+.dish-info{flex:1;min-width:0;}
+.dish-name{font-size:15px;font-weight:500;}
+.dish-meta{font-size:13px;color:var(--text-sec);}
+.dish-delete{width:32px;height:32px;border:1px solid var(--dang-bord);border-radius:var(--radius);background:transparent;color:var(--dang-text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.dish-delete:hover{background:var(--dang-bg);}
+.no-dishes{padding:24px;text-align:center;color:var(--text-mut);font-size:14px;background:var(--bg2);border-radius:12px;border:1px solid var(--border);}
 
 /* ── TOAST ── */
-#toast {
-  position: fixed; bottom: 90px; left: 50%;
-  transform: translateX(-50%);
-  background: #1a1916; color: #f0ede8;
-  padding: 9px 18px; border-radius: var(--radius);
-  font-size: 14px; font-weight: 500; z-index: 999;
-  opacity: 0; transition: opacity .3s;
-  white-space: nowrap; pointer-events: none;
-}
-@media (prefers-color-scheme: dark) {
-  #toast { background: #f0ede8; color: #1a1916; }
-}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1916;color:#f0ede8;padding:9px 18px;border-radius:var(--radius);font-size:14px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none;}
+@media(prefers-color-scheme:dark){#toast{background:#f0ede8;color:#1a1916;}}
 </style>
 </head>
 <body>
 
-<!-- ── TOPBAR ── -->
 <nav class="topbar">
-  <div class="topbar-title">
-    GDA <span class="sync-dot" id="sync-dot"></span>
-  </div>
+  <div class="topbar-title">GDA <span class="sync-dot" id="sync-dot"></span></div>
   <div class="tab-bar">
     <button class="tab-bar-btn active" id="tab-sala"  onclick="showTab('cameriere')">Sala</button>
     <button class="tab-bar-btn"        id="tab-cuci"  onclick="showTab('cucina')">Cucina</button>
+    <button class="tab-bar-btn"        id="tab-tavo"  onclick="showTab('tavoli')">Tavoli</button>
     <button class="tab-bar-btn"        id="tab-menu"  onclick="showTab('menu')">Menu</button>
   </div>
 </nav>
 
-<!-- ══════════════ CAMERIERE ══════════════ -->
+<!-- ══════════════ SALA ══════════════ -->
 <div id="screen-cameriere" class="screen visible">
-
-  <!-- barra tavolo -->
   <div class="cam-tavolo-bar">
     <label for="sel-tavolo">Tavolo</label>
     <select id="sel-tavolo" onchange="updateFab()">
       <option value="">— seleziona —</option>
     </select>
   </div>
-
-  <!-- LIVELLO 1: griglia categorie -->
   <div class="cam-level" id="cam-level-1">
     <div class="cat-grid" id="cat-grid"></div>
   </div>
-
-  <!-- LIVELLO 2: piatti categoria -->
   <div class="cam-level hidden" id="cam-level-2">
     <div class="cam-piatti-header">
-      <button class="back-btn" onclick="goBackToCategories()" aria-label="Indietro">←</button>
-      <span class="cam-piatti-title" id="cam-piatti-title">Antipasti</span>
+      <button class="back-btn" onclick="goBackToCategories()">←</button>
+      <span class="cam-piatti-title" id="cam-piatti-title"></span>
     </div>
     <div class="cam-piatti-list" id="cam-piatti-list"></div>
   </div>
-
-  <!-- FAB comanda -->
   <button class="cart-fab hidden" id="cart-fab" onclick="openCart()">
     Comanda <span class="cart-count" id="cart-count">0</span>
   </button>
-
-  <!-- Cart overlay -->
   <div class="cart-overlay" id="cart-overlay" role="dialog" aria-modal="true">
     <div class="cart-header">
       <h2>Comanda</h2>
       <button class="cart-close" onclick="closeCart()">✕</button>
     </div>
-    <div class="cart-body" id="cart-body">
-      <div class="cart-empty">Nessun piatto aggiunto</div>
-    </div>
+    <div class="cart-body" id="cart-body"><div class="cart-empty">Nessun piatto aggiunto</div></div>
     <div class="cart-footer">
       <div class="cart-total"><span>Totale</span><span id="cart-total">€0.00</span></div>
       <textarea class="cart-note" id="order-note" rows="2" placeholder="Note per la cucina..."></textarea>
@@ -479,7 +240,6 @@ body {
 <div id="screen-cucina" class="screen">
   <div class="cucina-toolbar">
     <div class="cucina-stats">
-      <span class="stat-pill stat-attesa" id="stat-attesa">⏳ 0 in attesa</span>
       <span class="stat-pill stat-prep"   id="stat-prep">👨‍🍳 0 in prep.</span>
       <span class="stat-pill stat-pronto" id="stat-pronto">✅ 0 pronti</span>
     </div>
@@ -490,16 +250,24 @@ body {
   </div>
   <div class="cucina-kanban">
     <div class="kanban-col">
-      <div class="kanban-col-header attesa">⏳ In attesa <span class="col-count" id="col-count-attesa">0</span></div>
-      <div class="kanban-cards" id="col-attesa"></div>
-    </div>
-    <div class="kanban-col">
       <div class="kanban-col-header prep">👨‍🍳 In preparazione <span class="col-count" id="col-count-prep">0</span></div>
       <div class="kanban-cards" id="col-prep"></div>
     </div>
     <div class="kanban-col">
       <div class="kanban-col-header pronto">✅ Pronti <span class="col-count" id="col-count-pronto">0</span></div>
       <div class="kanban-cards" id="col-pronto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TAVOLI ══════════════ -->
+<div id="screen-tavoli" class="screen">
+  <div class="tavoli-wrap">
+    <div class="tavoli-refresh">
+      <button class="refresh-btn" onclick="loadTavoli()">↻ Aggiorna</button>
+    </div>
+    <div class="tavoli-grid" id="tavoli-grid">
+      <div class="tavolo-empty">Nessun tavolo attivo</div>
     </div>
   </div>
 </div>
@@ -531,51 +299,33 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-/* ── SUPABASE ── */
-const SUPA_URL = 'https://sptwxscoqzbazpojgikv.supabase.co';
-const SUPA_KEY = 'sb_publishable_Kmndi3DKhim7hNM1V8maEQ_b17Hl2YA';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+const SUPA_URL='https://sptwxscoqzbazpojgikv.supabase.co';
+const SUPA_KEY='sb_publishable_Kmndi3DKhim7hNM1V8maEQ_b17Hl2YA';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
-/* ── STATE ── */
-let menu = [];
-let order = {};
-let comande = [];
-let cucinaSeenIds = new Set();
-const NUM_TAVOLI = 20;
-
-/* categorie fisse con emoji */
-const CAT_CONFIG = [
-  { name: 'Antipasti', emoji: '🥗' },
-  { name: 'Primi',     emoji: '🍝' },
-  { name: 'Secondi',   emoji: '🥩' },
-  { name: 'Dessert',   emoji: '🍮' },
-  { name: 'Bevande',   emoji: '🍷' },
-  { name: 'Bar',       emoji: '☕' },
+let menu=[], order={}, comande=[], cucinaSeenIds=new Set();
+const NUM_TAVOLI=20;
+const CAT_CONFIG=[
+  {name:'Antipasti',emoji:'🥗'},{name:'Primi',emoji:'🍝'},
+  {name:'Secondi',emoji:'🥩'},{name:'Dessert',emoji:'🍮'},
+  {name:'Bevande',emoji:'🍷'},{name:'Bar',emoji:'☕'},
 ];
 
-/* ── HELPERS ── */
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function getCategories(){ return [...new Set(menu.map(d=>d.cat))]; }
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.style.opacity=1;
-  clearTimeout(t._t); t._t=setTimeout(()=>{t.style.opacity=0;},2400);
-}
-function setSyncState(s){
-  const d=document.getElementById('sync-dot'); d.className='sync-dot '+s;
-}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function getCategories(){return[...new Set(menu.map(d=>d.cat))];}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity=1;clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity=0;},2400);}
+function setSyncState(s){document.getElementById('sync-dot').className='sync-dot '+s;}
 
-/* ── TAB ── */
 function showTab(tab){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('visible'));
   document.querySelectorAll('.tab-bar-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+tab).classList.add('visible');
-  const tabMap={cameriere:'sala',cucina:'cuci',menu:'menu'};
-  document.getElementById('tab-'+tabMap[tab]).classList.add('active');
+  const m={cameriere:'sala',cucina:'cuci',tavoli:'tavo',menu:'menu'};
+  document.getElementById('tab-'+m[tab]).classList.add('active');
   if(tab==='cucina') loadCucina();
+  if(tab==='tavoli') loadTavoli();
 }
 
-/* ── INIT ── */
 async function init(){
   setSyncState('syncing');
   const sel=document.getElementById('sel-tavolo');
@@ -584,20 +334,17 @@ async function init(){
   subscribeRealtime();
 }
 
-/* ── MENU (Supabase) ── */
+/* ── MENU ── */
 async function loadMenu(){
   setSyncState('syncing');
-  const {data,error}=await sb.from('menu').select('*').order('sort_order').order('id');
+  const{data,error}=await sb.from('menu').select('*').order('sort_order').order('id');
   if(error){setSyncState('error');showToast('❌ Errore caricamento menu');return;}
   menu=data.length?data:await seedDefaultMenu();
   setSyncState('online');
-  renderCatGrid();
-  renderDishList();
-  renderCatSelect();
+  renderCatGrid();renderDishList();renderCatSelect();
 }
-
 async function seedDefaultMenu(){
-  const defaults=[
+  const d=[
     {id:'p1',cat:'Antipasti',name:'Bruschetta al pomodoro',price:6,sort_order:1},
     {id:'p2',cat:'Antipasti',name:'Tagliere misto',price:12,sort_order:2},
     {id:'p3',cat:'Primi',name:'Spaghetti al pomodoro',price:10,sort_order:3},
@@ -609,71 +356,51 @@ async function seedDefaultMenu(){
     {id:'p9',cat:'Bevande',name:'Acqua naturale',price:2,sort_order:9},
     {id:'p10',cat:'Bevande',name:'Vino rosso (calice)',price:5,sort_order:10},
   ];
-  await sb.from('menu').upsert(defaults);
-  return defaults;
+  await sb.from('menu').upsert(d);return d;
 }
+async function saveMenuOrder(){await sb.from('menu').upsert(menu.map((d,i)=>({...d,sort_order:i})));}
 
-async function saveMenuOrder(){
-  const updates=menu.map((d,i)=>({...d,sort_order:i}));
-  await sb.from('menu').upsert(updates);
-}
-
-/* ════ CAMERIERE – livello 1 ════ */
+/* ── CAMERIERE ── */
 function renderCatGrid(){
-  const grid=document.getElementById('cat-grid');
-  grid.innerHTML=CAT_CONFIG.map(cfg=>{
-    const count=countOrderInCat(cfg.name);
-    return `<div class="cat-box" onclick="openCategory('${esc(cfg.name)}')">
+  document.getElementById('cat-grid').innerHTML=CAT_CONFIG.map(cfg=>{
+    const count=menu.filter(p=>p.cat===cfg.name).reduce((s,p)=>s+(order[p.id]||0),0);
+    return`<div class="cat-box" onclick="openCategory('${esc(cfg.name)}')">
       <span class="cat-box-emoji">${cfg.emoji}</span>
       <span class="cat-box-name">${cfg.name}</span>
       <span class="cat-box-count ${count>0?'visible':''}" id="cbox-count-${esc(cfg.name)}">${count}</span>
     </div>`;
   }).join('');
 }
-
-function countOrderInCat(cat){
-  return menu.filter(p=>p.cat===cat).reduce((sum,p)=>sum+(order[p.id]||0),0);
-}
-
 function refreshCatCounts(){
   CAT_CONFIG.forEach(cfg=>{
-    const el=document.getElementById('cbox-count-'+cfg.name);
-    if(!el) return;
-    const count=countOrderInCat(cfg.name);
-    el.textContent=count;
-    el.classList.toggle('visible',count>0);
+    const el=document.getElementById('cbox-count-'+cfg.name);if(!el)return;
+    const c=menu.filter(p=>p.cat===cfg.name).reduce((s,p)=>s+(order[p.id]||0),0);
+    el.textContent=c;el.classList.toggle('visible',c>0);
   });
 }
-
-/* ════ CAMERIERE – livello 2 ════ */
 function openCategory(cat){
   document.getElementById('cam-level-1').classList.add('hidden');
   document.getElementById('cam-level-2').classList.remove('hidden');
   document.getElementById('cam-piatti-title').textContent=cat;
   renderPiattiList(cat);
 }
-
 function goBackToCategories(){
   document.getElementById('cam-level-2').classList.add('hidden');
   document.getElementById('cam-level-1').classList.remove('hidden');
   refreshCatCounts();
 }
-
 function renderPiattiList(cat){
   const piatti=menu.filter(p=>p.cat===cat);
   const el=document.getElementById('cam-piatti-list');
-  if(!piatti.length){
-    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mut);font-size:14px">Nessun piatto in questa categoria</div>';
-    return;
-  }
+  if(!piatti.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mut)">Nessun piatto</div>';return;}
   el.innerHTML=piatti.map(p=>{
     const qty=order[p.id]||0;
-    return `<div class="cam-piatto-row">
+    return`<div class="cam-piatto-row">
       <div class="cam-piatto-info">
         <div class="cam-piatto-name">${esc(p.name)}</div>
         <div class="cam-piatto-price">€${Number(p.price).toFixed(2)}</div>
       </div>
-      <div class="inline-qty" id="iqw-${p.id}">
+      <div class="inline-qty">
         <button class="iq-btn" onclick="changeQty('${p.id}',-1)">−</button>
         <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
         <button class="iq-btn" onclick="changeQty('${p.id}',1)">+</button>
@@ -681,175 +408,203 @@ function renderPiattiList(cat){
     </div>`;
   }).join('');
 }
-
 function changeQty(id,delta){
   order[id]=(order[id]||0)+delta;
-  if(order[id]<=0) delete order[id];
-  // aggiorna solo il contatore inline
-  const valEl=document.getElementById('iq-'+id);
-  if(valEl){
-    const qty=order[id]||0;
-    valEl.textContent=qty;
-    valEl.className='iq-val'+(qty===0?' zero':'');
-  }
-  updateFab();
-  renderCart();
+  if(order[id]<=0)delete order[id];
+  const el=document.getElementById('iq-'+id);
+  if(el){const q=order[id]||0;el.textContent=q;el.className='iq-val'+(q===0?' zero':'');}
+  updateFab();renderCart();
 }
-
 function updateFab(){
   const total=Object.values(order).reduce((a,b)=>a+b,0);
   const fab=document.getElementById('cart-fab');
   const tv=document.getElementById('sel-tavolo').value;
-  if(total>0&&tv){
-    fab.classList.remove('hidden');
-    document.getElementById('cart-count').textContent=total;
-  } else {
-    fab.classList.add('hidden');
-  }
+  if(tv){fab.classList.remove('hidden');document.getElementById('cart-count').textContent=total;fab.classList.toggle('cart-count-zero',total===0);}
+  else fab.classList.add('hidden');
   document.getElementById('send-btn').disabled=total===0||!tv;
 }
-
-function openCart(){ renderCart(); document.getElementById('cart-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCart(){ document.getElementById('cart-overlay').classList.remove('open'); document.body.style.overflow=''; }
-
+function openCart(){renderCart();document.getElementById('cart-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeCart(){document.getElementById('cart-overlay').classList.remove('open');document.body.style.overflow='';}
 function renderCart(){
   const el=document.getElementById('cart-body');
   const ids=Object.keys(order);
-  if(!ids.length){ el.innerHTML='<div class="cart-empty">Nessun piatto aggiunto</div>'; setTotal(); return; }
+  if(!ids.length){el.innerHTML='<div class="cart-empty">Nessun piatto aggiunto</div>';setTotal();return;}
   el.innerHTML=ids.map(id=>{
-    const p=menu.find(x=>x.id===id); if(!p) return '';
-    return `<div class="cart-item">
+    const p=menu.find(x=>x.id===id);if(!p)return'';
+    return`<div class="cart-item">
       <div class="cart-item-name">${esc(p.name)}</div>
       <div class="qty-ctrl">
-        <button class="qty-btn" onclick="cartChangeQty('${id}',-1)">−</button>
+        <button class="qty-btn" onclick="cartCQ('${id}',-1)">−</button>
         <span class="qty-val-c">${order[id]}</span>
-        <button class="qty-btn" onclick="cartChangeQty('${id}',1)">+</button>
+        <button class="qty-btn" onclick="cartCQ('${id}',1)">+</button>
       </div>
       <div class="cart-item-price">€${(Number(p.price)*order[id]).toFixed(2)}</div>
     </div>`;
   }).join('');
   setTotal();
 }
-
-function cartChangeQty(id,delta){
-  order[id]=(order[id]||0)+delta;
-  if(order[id]<=0) delete order[id];
-  updateFab(); renderCart();
-  // aggiorna anche il contatore nella lista piatti se visibile
-  const valEl=document.getElementById('iq-'+id);
-  if(valEl){
-    const qty=order[id]||0;
-    valEl.textContent=qty;
-    valEl.className='iq-val'+(qty===0?' zero':'');
-  }
+function cartCQ(id,delta){
+  order[id]=(order[id]||0)+delta;if(order[id]<=0)delete order[id];
+  updateFab();renderCart();
+  const el=document.getElementById('iq-'+id);
+  if(el){const q=order[id]||0;el.textContent=q;el.className='iq-val'+(q===0?' zero':'');}
 }
-
 function setTotal(){
-  let tot=0;
-  for(const id in order){ const p=menu.find(x=>x.id===id); if(p) tot+=Number(p.price)*order[id]; }
+  let tot=0;for(const id in order){const p=menu.find(x=>x.id===id);if(p)tot+=Number(p.price)*order[id];}
   document.getElementById('cart-total').textContent='€'+tot.toFixed(2);
 }
-
 async function sendComanda(){
   const tv=document.getElementById('sel-tavolo').value;
-  if(!tv||!Object.keys(order).length) return;
+  if(!tv||!Object.keys(order).length)return;
   const note=document.getElementById('order-note').value.trim();
   const piatti=Object.entries(order).map(([id,qty])=>{
     const p=menu.find(x=>x.id===id);
-    return {name:p?p.name:id,qty,price:p?Number(p.price):0};
+    return{name:p?p.name:id,qty,price:p?Number(p.price):0,pronto:false};
   });
-  const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'attesa',ts:Date.now()};
+  const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'preparazione',ts:Date.now(),piatti_pronti:[]};
   setSyncState('syncing');
-  const {error}=await sb.from('comande').insert(c);
+  const{error}=await sb.from('comande').insert(c);
   if(error){setSyncState('error');showToast('❌ Errore invio comanda');return;}
   setSyncState('online');
   order={};
   document.getElementById('order-note').value='';
   document.getElementById('sel-tavolo').value='';
-  closeCart(); updateFab(); renderCart();
-  renderCatGrid();
+  closeCart();updateFab();renderCart();renderCatGrid();
   showToast('✅ Comanda tavolo '+tv+' inviata!');
 }
 
-/* ════ CUCINA ════ */
+/* ── CUCINA ── */
 async function loadCucina(){
   setSyncState('syncing');
-  const {data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
+  const{data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
   if(error){setSyncState('error');return;}
-  comande=data||[];
-  setSyncState('online');
-  renderCucina();
+  comande=data||[];setSyncState('online');renderCucina();
 }
-
 function renderCucina(){
   document.getElementById('last-update').textContent='Aggiornato: '+new Date().toLocaleTimeString('it-IT');
-  const cols={attesa:[],preparazione:[],pronto:[]};
-  comande.forEach(c=>{if(cols[c.stato]) cols[c.stato].push(c);});
-  document.getElementById('stat-attesa').textContent='⏳ '+cols.attesa.length+' in attesa';
-  document.getElementById('stat-prep').textContent  ='👨‍🍳 '+cols.preparazione.length+' in prep.';
-  document.getElementById('stat-pronto').textContent='✅ '+cols.pronto.length+' pronti';
-  document.getElementById('col-count-attesa').textContent=cols.attesa.length;
-  document.getElementById('col-count-prep').textContent  =cols.preparazione.length;
-  document.getElementById('col-count-pronto').textContent=cols.pronto.length;
-  renderKanbanCol('col-attesa',    cols.attesa);
-  renderKanbanCol('col-prep',      cols.preparazione);
-  renderKanbanCol('col-pronto',    cols.pronto);
+  const prep=comande.filter(c=>c.stato==='preparazione');
+  const pron=comande.filter(c=>c.stato==='pronto');
+  document.getElementById('stat-prep').textContent  ='👨‍🍳 '+prep.length+' in prep.';
+  document.getElementById('stat-pronto').textContent='✅ '+pron.length+' pronti';
+  document.getElementById('col-count-prep').textContent  =prep.length;
+  document.getElementById('col-count-pronto').textContent=pron.length;
+  renderKanbanCol('col-prep',prep);
+  renderKanbanCol('col-pronto',pron);
 }
-
 function renderKanbanCol(elId,cards){
   const el=document.getElementById(elId);
   if(!cards.length){el.innerHTML='<div class="kanban-empty">Nessuna comanda</div>';return;}
-  const btnCls={attesa:'on-attesa',preparazione:'on-prep',pronto:'on-pronto'};
   el.innerHTML=cards.map(c=>{
-    const isNew=!cucinaSeenIds.has(c.id); if(isNew) cucinaSeenIds.add(c.id);
+    const isNew=!cucinaSeenIds.has(c.id);if(isNew)cucinaSeenIds.add(c.id);
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
-    return `<div class="comanda-card">
+    const pronti=Array.isArray(c.piatti_pronti)?c.piatti_pronti:(JSON.parse(c.piatti_pronti||'[]'));
+    const totPiatti=piatti.length;
+    const totPronti=pronti.length;
+    return`<div class="comanda-card">
       <div class="comanda-head">
         <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
         ${isNew?'<span class="new-badge">NUOVO</span>':''}
         <span class="comanda-time">${time}</span>
       </div>
-      <div class="comanda-piatti">
-        ${piatti.map(p=>`<div class="piatto-line"><span class="piatto-qty">${p.qty}×</span><span class="piatto-name">${esc(p.name)}</span></div>`).join('')}
-      </div>
+      ${piatti.map((p,i)=>{
+        const isDone=pronti.includes(i);
+        return`<div class="piatto-riga">
+          <div class="piatto-riga-info">
+            <span class="piatto-riga-qty">${p.qty}×</span>
+            <span class="piatto-riga-name ${isDone?'done':''}">${esc(p.name)}</span>
+          </div>
+          ${!isDone?`<button class="piatto-pronto-btn" onclick="setPiattoProto('${c.id}',${i})">Pronto</button>`
+            :`<span style="font-size:12px;color:var(--succ-text);font-weight:600">✓</span>`}
+        </div>`;
+      }).join('')}
+      <div class="piatti-progress">${totPronti}/${totPiatti} pronti</div>
       ${c.note?`<div class="comanda-note">📝 ${esc(c.note)}</div>`:''}
-      <div class="stato-btns">
-        <button class="stato-btn ${c.stato==='attesa'?btnCls.attesa:''}"             onclick="setStato('${c.id}','attesa')">⏳ Attesa</button>
-        <button class="stato-btn ${c.stato==='preparazione'?btnCls.preparazione:''}" onclick="setStato('${c.id}','preparazione')">👨‍🍳 In prep.</button>
-        <button class="stato-btn ${c.stato==='pronto'?btnCls.pronto:''}"             onclick="setStato('${c.id}','pronto')">✅ Pronto</button>
-        <button class="stato-btn chiudi" onclick="setStato('${c.id}','completato')">✓ Chiudi</button>
+    </div>`;
+  }).join('');
+}
+
+async function setPiattoProto(comandaId, idx){
+  const c=comande.find(x=>x.id===comandaId);if(!c)return;
+  const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
+  let pronti=Array.isArray(c.piatti_pronti)?[...c.piatti_pronti]:[...JSON.parse(c.piatti_pronti||'[]')];
+  if(!pronti.includes(idx)) pronti.push(idx);
+  const tuttiPronti=pronti.length>=piatti.length;
+  const update=tuttiPronti
+    ?{piatti_pronti:pronti,stato:'completato'}
+    :pronti.length>0?{piatti_pronti:pronti,stato:'pronto'}:{piatti_pronti:pronti};
+  setSyncState('syncing');
+  const{error}=await sb.from('comande').update(update).eq('id',comandaId);
+  if(error){setSyncState('error');showToast('❌ Errore');return;}
+  setSyncState('online');
+  if(tuttiPronti) showToast('✅ Tutte le pietanze del tavolo '+c.tavolo+' sono pronte!');
+  await loadCucina();
+}
+
+/* ── TAVOLI ── */
+async function loadTavoli(){
+  setSyncState('syncing');
+  const{data,error}=await sb.from('comande').select('*').neq('stato','completato').order('ts');
+  if(error){setSyncState('error');return;}
+  setSyncState('online');
+  renderTavoli(data||[]);
+}
+function renderTavoli(comandeAttive){
+  const el=document.getElementById('tavoli-grid');
+  if(!comandeAttive.length){el.innerHTML='<div class="tavolo-empty">Nessun tavolo attivo al momento</div>';return;}
+  // raggruppa per tavolo
+  const byTavolo={};
+  comandeAttive.forEach(c=>{
+    const tv=c.tavolo;
+    if(!byTavolo[tv]) byTavolo[tv]={tavolo:tv,piatti:{},note:[]};
+    const piatti=Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');
+    piatti.forEach(p=>{
+      const k=p.name;
+      if(!byTavolo[tv].piatti[k]) byTavolo[tv].piatti[k]={name:k,qty:0,price:p.price};
+      byTavolo[tv].piatti[k].qty+=p.qty;
+    });
+    if(c.note) byTavolo[tv].note.push(c.note);
+  });
+  el.innerHTML=Object.values(byTavolo).sort((a,b)=>Number(a.tavolo)-Number(b.tavolo)).map(tv=>{
+    const righe=Object.values(tv.piatti);
+    const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+    return`<div class="tavolo-card">
+      <div class="tavolo-card-header">
+        <span class="tavolo-card-num">Tavolo ${tv.tavolo}</span>
+        <span class="tavolo-card-total">€${totale.toFixed(2)}</span>
+      </div>
+      <div class="tavolo-card-body">
+        ${righe.map(p=>`<div class="tavolo-piatto-line">
+          <span class="tavolo-piatto-name">${esc(p.name)}</span>
+          <span class="tavolo-piatto-qty">${p.qty}×</span>
+          <span class="tavolo-piatto-price">€${(Number(p.price)*p.qty).toFixed(2)}</span>
+        </div>`).join('')}
+        ${tv.note.length?`<div style="font-size:12px;color:var(--text-mut);font-style:italic;margin-top:8px">📝 ${tv.note.map(n=>esc(n)).join(' — ')}</div>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-async function setStato(id,stato){
-  setSyncState('syncing');
-  const {error}=await sb.from('comande').update({stato}).eq('id',id);
-  if(error){setSyncState('error');showToast('❌ Errore');return;}
-  setSyncState('online');
-  await loadCucina();
-}
-
-/* ════ REALTIME ════ */
+/* ── REALTIME ── */
 function subscribeRealtime(){
-  sb.channel('comande-rt')
-    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},()=>{ loadCucina(); })
+  sb.channel('all-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'comande'},()=>{
+      loadCucina();
+      // aggiorna tavoli se visibile
+      if(document.getElementById('screen-tavoli').classList.contains('visible')) loadTavoli();
+    })
     .subscribe(s=>{
-      if(s==='SUBSCRIBED') setSyncState('online');
-      else if(s==='CLOSED'||s==='CHANNEL_ERROR') setSyncState('error');
+      if(s==='SUBSCRIBED')setSyncState('online');
+      else if(s==='CLOSED'||s==='CHANNEL_ERROR')setSyncState('error');
     });
 }
 
-/* ════ MENU MANAGER ════ */
+/* ── MENU MANAGER ── */
 function renderCatSelect(){
   const sel=document.getElementById('dish-cat-sel');
-  const cats=getCategories();
   sel.innerHTML=`<option value="">Categoria esistente...</option>`+
-    cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    getCategories().map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
 }
-
 function renderDishList(){
   const el=document.getElementById('dish-list');
   if(!menu.length){el.innerHTML='<div class="no-dishes">Nessun piatto. Aggiungine uno sopra!</div>';return;}
@@ -866,44 +621,34 @@ function renderDishList(){
       <button class="dish-delete" onclick="deleteDish('${d.id}')">🗑</button>
     </div>`).join('');
 }
-
 async function addDish(){
-  const name  =document.getElementById('dish-name').value.trim();
-  const price =parseFloat(document.getElementById('dish-price').value);
+  const name=document.getElementById('dish-name').value.trim();
+  const price=parseFloat(document.getElementById('dish-price').value);
   const catSel=document.getElementById('dish-cat-sel').value;
   const catNew=document.getElementById('dish-new-cat').value.trim();
-  const cat   =catNew||catSel;
-  const errEl =document.getElementById('add-dish-err');
-  errEl.textContent='';
-  if(!name)                {errEl.textContent='Inserisci il nome del piatto.';return;}
+  const cat=catNew||catSel;
+  const errEl=document.getElementById('add-dish-err');errEl.textContent='';
+  if(!name){errEl.textContent='Inserisci il nome del piatto.';return;}
   if(isNaN(price)||price<0){errEl.textContent='Inserisci un prezzo valido.';return;}
-  if(!cat)                 {errEl.textContent='Seleziona o crea una categoria.';return;}
-  const newDish={id:'p'+Date.now(),cat,name,price,sort_order:menu.length};
+  if(!cat){errEl.textContent='Seleziona o crea una categoria.';return;}
   setSyncState('syncing');
-  const {error}=await sb.from('menu').insert(newDish);
+  const{error}=await sb.from('menu').insert({id:'p'+Date.now(),cat,name,price,sort_order:menu.length});
   if(error){setSyncState('error');showToast('❌ Errore salvataggio');return;}
   setSyncState('online');
   document.getElementById('dish-name').value='';
   document.getElementById('dish-price').value='';
   document.getElementById('dish-new-cat').value='';
-  await loadMenu();
-  showToast('Piatto aggiunto!');
+  await loadMenu();showToast('Piatto aggiunto!');
 }
-
 async function deleteDish(id){
   setSyncState('syncing');
   await sb.from('menu').delete().eq('id',id);
-  setSyncState('online');
-  await loadMenu();
+  setSyncState('online');await loadMenu();
 }
-
 async function moveDish(i,dir){
-  const j=i+dir;
-  if(j<0||j>=menu.length) return;
+  const j=i+dir;if(j<0||j>=menu.length)return;
   [menu[i],menu[j]]=[menu[j],menu[i]];
-  renderDishList();
-  await saveMenuOrder();
-  await loadMenu();
+  renderDishList();await saveMenuOrder();await loadMenu();
 }
 
 init();
