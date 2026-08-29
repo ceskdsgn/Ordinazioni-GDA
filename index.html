@@ -911,7 +911,7 @@ function renderCucina(){
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     const piatti=parsePiatti(c);
 
-    const SOLO_TAVOLI=['Dessert','Bevande','Bar'];
+    const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar'];
     const catOrder=CAT_CONFIG.map(x=>x.name);
     const byCat={};
     piatti.forEach(p=>{
