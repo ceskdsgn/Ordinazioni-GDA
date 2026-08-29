@@ -592,7 +592,6 @@ function openCategory(catName){
   _currentParentCat=null;
   const cfg=CAT_CONFIG.find(c=>c.name===catName);
   if(cfg&&cfg.sub){
-    // show subcategory chooser inside level-2
     document.getElementById('cam-level-1').classList.add('hidden');
     document.getElementById('cam-level-2').classList.remove('hidden');
     document.getElementById('cam-piatti-title').textContent=catName;
@@ -614,25 +613,22 @@ function openCategory(catName){
   document.getElementById('cam-piatti-title').textContent=catName;
   renderPiattiList(catName);
 }
-let _currentParentCat=null;
 function openSubCategory(subCat, parentCat){
   _currentParentCat=parentCat;
   document.getElementById('cam-piatti-title').textContent=subCat;
   renderPiattiList(subCat);
-  document.querySelector('#cam-level-2 .back-btn').onclick=()=>openCategory(parentCat);
+  document.querySelector('#cam-level-2 .back-btn').onclick=()=>{
+    _currentParentCat=null;
+    openCategory(parentCat);
+  };
 }
 function goBackToCategories(){
-  if(_currentParentCat){
-    const parent=_currentParentCat;
-    _currentParentCat=null;
-    openCategory(parent);
-  } else {
-    document.getElementById('cam-level-2').classList.add('hidden');
-    document.getElementById('cam-level-3').classList.add('hidden');
-    document.getElementById('cam-level-1').classList.remove('hidden');
-    document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
-    refreshCatCounts();
-  }
+  _currentParentCat=null;
+  document.getElementById('cam-level-2').classList.add('hidden');
+  document.getElementById('cam-level-3').classList.add('hidden');
+  document.getElementById('cam-level-1').classList.remove('hidden');
+  document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
+  refreshCatCounts();
 }
 
 function openCustomPiatto(){
