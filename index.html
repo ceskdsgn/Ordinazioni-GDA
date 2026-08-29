@@ -128,7 +128,7 @@ input,select,textarea{font-size:16px !important;}
 .cam-level{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .cam-level.hidden{display:none;}
 /* griglia categorie */
-.cat-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr auto;gap:12px;padding:12px 12px 90px;}
+.cat-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr auto;gap:12px;padding:12px 12px 82px;}
 .cat-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
 .cat-box:active{background:var(--acc-bg);transform:scale(.97);}
 .cat-box-emoji{font-size:40px;line-height:1;}
@@ -172,8 +172,8 @@ input,select,textarea{font-size:16px !important;}
 .iq-val{min-width:34px;text-align:center;font-size:17px;font-weight:700;color:var(--text-pri);}
 .iq-val.zero{color:var(--text-mut);}
 /* FAB */
-.cart-fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;background:var(--acc-fill);color:var(--acc-on);border:none;border-radius:32px;padding:16px 40px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-md);transition:transform .15s,opacity .2s;white-space:nowrap;}
-.cart-fab:active{transform:translateX(-50%) scale(.97);}
+.cart-fab{position:fixed;bottom:20px;left:12px;right:12px;transform:none;z-index:200;background:var(--acc-fill);color:var(--acc-on);border:none;border-radius:32px;padding:16px 40px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:var(--shadow-md);transition:opacity .2s;white-space:nowrap;}
+.cart-fab:active{opacity:.85;}
 .cart-fab .cart-count{background:rgba(255,255,255,.28);border-radius:14px;padding:2px 10px;font-size:16px;font-weight:700;}
 .cart-fab.cart-count-zero .cart-count{display:none;}
 .cart-fab.hidden{opacity:0;pointer-events:none;}
@@ -284,6 +284,9 @@ input,select,textarea{font-size:16px !important;}
 .add-dish-btn:disabled{opacity:.4;cursor:default;}
 .dish-list-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
 .dish-list-item:last-of-type{border-bottom:none;}
+.dish-list-item.disabled-dish{opacity:.45;}
+.dish-toggle-btn{width:32px;height:32px;border:1px solid var(--border-s);border-radius:var(--radius);background:transparent;color:var(--text-sec);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.dish-toggle-btn:hover{background:var(--bg1);}
 .dish-order-btns{display:flex;flex-direction:column;gap:2px;}
 .dish-ord-btn{width:22px;height:20px;border:1px solid var(--border-s);border-radius:4px;background:var(--bg1);color:var(--text-sec);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .dish-ord-btn:hover{background:var(--border-s);}
@@ -332,7 +335,7 @@ input,select,textarea{font-size:16px !important;}
       style="display:none;flex:1;padding:8px 10px;border-radius:var(--radius);border:1px solid #4a4842;background:#2c2c29;color:#f0ede8;font-size:16px;font-family:inherit;" />
     <button id="tavolo-custom-clear" onclick="clearCustomTavolo()" style="display:none;width:32px;height:32px;border-radius:var(--radius);border:1px solid #4a4842;background:transparent;color:#9e9b96;font-size:16px;cursor:pointer;flex-shrink:0;display:none;align-items:center;justify-content:center;">✕</button>
   </div>
-  <div class="cam-level" id="cam-level-1" style="overflow-y:auto;">
+  <div class="cam-level" id="cam-level-1">
     <div class="cat-grid" id="cat-grid"></div>
   </div>
   <div class="cam-level hidden" id="cam-level-2">
@@ -466,6 +469,7 @@ const CAT_CONFIG=[
   {name:'Bevande',emoji:'🍷',sub:[{name:'Bibite',emoji:'🥤'},{name:'Vini',emoji:'🍷'},{name:'Birre',emoji:'🍺'}]},
   {name:'Bar',emoji:'☕'},
 ];
+const FISH_CATS=['Primi di mare','Secondi di mare'];
 
 function getTavolo(){
   const custom=document.getElementById('custom-tavolo-input');
@@ -585,14 +589,16 @@ function refreshCatCounts(){
   });
 }
 function openCategory(catName){
+  _currentParentCat=null;
   const cfg=CAT_CONFIG.find(c=>c.name===catName);
   if(cfg&&cfg.sub){
     // show subcategory chooser inside level-2
     document.getElementById('cam-level-1').classList.add('hidden');
     document.getElementById('cam-level-2').classList.remove('hidden');
     document.getElementById('cam-piatti-title').textContent=catName;
+    document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
     document.getElementById('cam-piatti-list').innerHTML=
-      `<div style="display:flex;flex-direction:column;gap:12px;padding:12px;height:calc(100% - 24px)">`+
+      `<div style="display:flex;flex-direction:column;gap:12px;padding:12px;padding-bottom:82px;height:calc(100% - 94px)">`+
       cfg.sub.map(s=>{
         const c=menu.filter(p=>p.cat===s.name).reduce((t,p)=>t+(order[p.id]||0),0);
         return`<div class="cat-box" style="flex:1" onclick="openSubCategory('${esc(s.name)}','${esc(catName)}')">
@@ -608,19 +614,25 @@ function openCategory(catName){
   document.getElementById('cam-piatti-title').textContent=catName;
   renderPiattiList(catName);
 }
+let _currentParentCat=null;
 function openSubCategory(subCat, parentCat){
+  _currentParentCat=parentCat;
   document.getElementById('cam-piatti-title').textContent=subCat;
   renderPiattiList(subCat);
-  // back button should go back to parent subcategory list, not level-1
   document.querySelector('#cam-level-2 .back-btn').onclick=()=>openCategory(parentCat);
 }
 function goBackToCategories(){
-  document.getElementById('cam-level-2').classList.add('hidden');
-  document.getElementById('cam-level-3').classList.add('hidden');
-  document.getElementById('cam-level-1').classList.remove('hidden');
-  // reset back button to default
-  document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
-  refreshCatCounts();
+  if(_currentParentCat){
+    const parent=_currentParentCat;
+    _currentParentCat=null;
+    openCategory(parent);
+  } else {
+    document.getElementById('cam-level-2').classList.add('hidden');
+    document.getElementById('cam-level-3').classList.add('hidden');
+    document.getElementById('cam-level-1').classList.remove('hidden');
+    document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
+    refreshCatCounts();
+  }
 }
 
 function openCustomPiatto(){
@@ -687,11 +699,38 @@ function addCustomPiatto(){
   showToast('✓ Piatto personalizzato aggiunto');
 }
 function renderPiattiList(cat){
-  const piatti=menu.filter(p=>p.cat===cat);
+  const piatti=menu.filter(p=>p.cat===cat&&p.enabled!==false);
   const el=document.getElementById('cam-piatti-list');
-  if(!piatti.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mut)">Nessun piatto</div>';return;}
+  if(!piatti.length){el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mut)">Nessun piatto disponibile</div>';return;}
+  const isFish=FISH_CATS.includes(cat);
   el.innerHTML=piatti.map(p=>{
     const qty=order[p.id]||0;
+    const ppk=Number(p.price_per_kg||0);
+    const bp=Number(p.base_price||p.price||0);
+    const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'0.5';
+    if(isFish&&ppk>0){
+      // init _dynPrice with default 0.5kg if not already set
+      if(!window._kgMap) window._kgMap={};
+      if(window._kgMap[p.id]==null){window._kgMap[p.id]='0.5';const pm=menu.find(x=>x.id===p.id);if(pm)pm._dynPrice=bp+ppk*0.5;}
+      const dynPrice=`€${(bp+ppk*parseFloat(kgVal)).toFixed(2)}`;
+      return`<div class="cam-piatto-row" id="row-${p.id}">
+        <div class="cam-piatto-info">
+          <div class="cam-piatto-name">${esc(p.name)}</div>
+          <div class="cam-piatto-price" id="dynprice-${p.id}">${dynPrice}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+            <input type="number" min="0" step="0.1" placeholder="kg" value="${kgVal}"
+              style="width:80px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:15px;font-weight:600"
+              oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" />
+            <span style="font-size:13px;color:var(--text-sec)">kg</span>
+          </div>
+        </div>
+        <div class="inline-qty">
+          <button class="iq-btn" onclick="changeQty('${p.id}',-1)">−</button>
+          <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
+          <button class="iq-btn" onclick="changeQty('${p.id}',1)">+</button>
+        </div>
+      </div>`;
+    }
     return`<div class="cam-piatto-row">
       <div class="cam-piatto-info">
         <div class="cam-piatto-name">${esc(p.name)}</div>
@@ -704,6 +743,26 @@ function renderPiattiList(cat){
       </div>
     </div>`;
   }).join('');
+}
+function updateFishKg(id,val,bp,ppk){
+  if(!window._kgMap) window._kgMap={};
+  window._kgMap[id]=val;
+  // update price in the dish in memory so cart calculates correctly
+  const p=menu.find(x=>x.id===id);
+  if(p&&val&&!isNaN(parseFloat(val))){
+    p._dynPrice=bp+ppk*parseFloat(val);
+  } else if(p){
+    delete p._dynPrice;
+  }
+  const el=document.getElementById('dynprice-'+id);
+  if(el){
+    if(val&&!isNaN(parseFloat(val))){
+      el.textContent=`€${(bp+ppk*parseFloat(val)).toFixed(2)}`;
+    } else {
+      el.textContent=`base €${bp.toFixed(2)} + €${ppk.toFixed(2)}/kg`;
+    }
+  }
+  renderCart();setTotal();
 }
 function changeQty(id,delta){
   order[id]=(order[id]||0)+delta;
@@ -729,15 +788,20 @@ function renderCart(){
   el.innerHTML=ids.map(id=>{
     const p=menu.find(x=>x.id===id)||(window._customPiatti&&window._customPiatti[id]);
     if(!p) return'';
-    const price=p.custom&&p.price===0?'—':`€${(Number(p.price)*order[id]).toFixed(2)}`;
+    let unitPrice;
+    if(p.custom&&p.price===0){unitPrice=null;}
+    else if(p._dynPrice!=null){unitPrice=p._dynPrice;}
+    else{unitPrice=Number(p.price);}
+    const priceStr=unitPrice==null?'—':`€${(unitPrice*order[id]).toFixed(2)}`;
+    const kg=window._kgMap&&window._kgMap[id]?` (${parseFloat(window._kgMap[id]).toFixed(2)} kg)`:'';
     return`<div class="cart-item">
-      <div class="cart-item-name">${esc(p.name)}${p.custom?` <span style="font-size:11px;color:#9e9b96">(${esc(p.cat)})</span>`:''}</div>
+      <div class="cart-item-name">${esc(p.name)}${kg}${p.custom?` <span style="font-size:11px;color:#9e9b96">(${esc(p.cat)})</span>`:''}</div>
       <div class="qty-ctrl">
         <button class="qty-btn" onclick="cartCQ('${id}',-1)">−</button>
         <span class="qty-val-c">${order[id]}</span>
         <button class="qty-btn" onclick="cartCQ('${id}',1)">+</button>
       </div>
-      <div class="cart-item-price">${price}</div>
+      <div class="cart-item-price">${priceStr}</div>
     </div>`;
   }).join('');
   setTotal();
@@ -757,7 +821,10 @@ function setTotal(){
       else hasUnpriced=true;
       continue;
     }
-    const p=menu.find(x=>x.id===id);if(p)tot+=Number(p.price)*order[id];
+    const p=menu.find(x=>x.id===id);
+    if(!p) continue;
+    if(p._dynPrice!=null) tot+=p._dynPrice*order[id];
+    else tot+=Number(p.price)*order[id];
   }
   document.getElementById('cart-total').textContent='€'+tot.toFixed(2)+(hasUnpriced?' + da definire':'');
 }
@@ -780,6 +847,8 @@ async function sendComanda(){
   setSyncState('online');
   order={};
   if(window._customPiatti) window._customPiatti={};
+  if(window._kgMap) window._kgMap={};
+  menu.forEach(p=>delete p._dynPrice);
   document.getElementById('order-note').value='';
   document.getElementById('sel-tavolo').value='';
   document.getElementById('custom-tavolo-input').value='';
@@ -1048,25 +1117,45 @@ function renderDishList(){
   el.innerHTML=flatCats.map(cat=>{
     const items=byCat[cat];
     if(!items.length) return '';
-    const rows=items.map(d=>`
-      <div class="dish-list-item" id="dish-item-${d.id}">
+    const isFish=FISH_CATS.includes(cat);
+    const rows=items.map(d=>{
+      const enabled=d.enabled!==false;
+      const ppk=Number(d.price_per_kg||0);
+      const bp=Number(d.base_price||d.price||0);
+      const priceLabel=ppk>0?`base €${bp.toFixed(2)} + €${ppk.toFixed(2)}/kg`:`€${Number(d.price).toFixed(2)}`;
+      return`
+      <div class="dish-list-item${enabled?'':' disabled-dish'}" id="dish-item-${d.id}">
         <div class="dish-info">
-          <div class="dish-name">${esc(d.name)}</div>
-          <div class="dish-meta">€${Number(d.price).toFixed(2)}</div>
+          <div class="dish-name">${esc(d.name)}${enabled?'':' <span style="font-size:11px;color:var(--text-mut)">(non disp.)</span>'}</div>
+          <div class="dish-meta">${priceLabel}</div>
         </div>
+        <button class="dish-toggle-btn" onclick="toggleDishEnabled('${d.id}')" title="${enabled?'Disabilita':'Abilita'}">${enabled?'⏸':'▶'}</button>
         <button class="dish-edit-btn" onclick="toggleEditDish('${d.id}')" title="Modifica">✏️</button>
         <button class="dish-delete" onclick="deleteDish('${d.id}')">🗑</button>
       </div>
       <div class="dish-edit-form" id="dish-edit-${d.id}">
         <div class="dish-edit-row">
           <input class="form-input" id="edit-name-${d.id}" value="${esc(d.name)}" placeholder="Nome" />
-          <input class="form-input form-input-sm" id="edit-price-${d.id}" type="number" min="0" step="0.5" value="${Number(d.price).toFixed(2)}" placeholder="€" />
-        </div>
-        <div class="dish-edit-row">
           <select class="form-select" id="edit-cat-${d.id}">${CAT_CONFIG.flatMap(c=>c.sub||[c]).map(c=>`<option value="${esc(c.name)}"${c.name===d.cat?' selected':''}>${esc(c.name)}</option>`).join('')}</select>
         </div>
+        ${isFish?`
+        <div class="dish-edit-row">
+          <input class="form-input form-input-sm" id="edit-baseprice-${d.id}" type="number" min="0" step="0.5" value="${bp.toFixed(2)}" placeholder="€ base fissa" />
+          <input class="form-input form-input-sm" id="edit-ppk-${d.id}" type="number" min="0" step="0.1" value="${ppk.toFixed(2)}" placeholder="€/kg pesce" />
+        </div>
+        <div style="display:flex;gap:8px;font-size:11px;color:var(--text-mut);padding:0 2px">
+          <span style="flex:1;text-align:center">€ fissi</span>
+          <span style="flex:1;text-align:center">€/kg</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-sec);padding:2px 2px 0">Prezzo = base fissa + (kg × €/kg)</div>
+        `:`
+        <div class="dish-edit-row">
+          <input class="form-input form-input-sm" id="edit-price-${d.id}" type="number" min="0" step="0.5" value="${Number(d.price).toFixed(2)}" placeholder="€" />
+        </div>
+        `}
         <button class="add-dish-btn" style="margin-top:4px" onclick="saveDish('${d.id}')">Salva modifiche</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     return`<div class="dish-cat-section">
       <div class="dish-cat-label">${esc(cat)}</div>
       <div class="dish-cat-items">${rows}</div>
@@ -1077,13 +1166,33 @@ function toggleEditDish(id){
   const form=document.getElementById('dish-edit-'+id);
   form.classList.toggle('open');
 }
-async function saveDish(id){
-  const name=document.getElementById('edit-name-'+id).value.trim();
-  const price=parseFloat(document.getElementById('edit-price-'+id).value);
-  const cat=document.getElementById('edit-cat-'+id).value;
-  if(!name||isNaN(price)||price<0){showToast('❌ Dati non validi');return;}
+async function toggleDishEnabled(id){
+  const d=menu.find(x=>x.id===id);if(!d)return;
+  const enabled=d.enabled===false?true:false;
   setSyncState('syncing');
-  const{error}=await sb.from('menu').update({name,price,cat}).eq('id',id);
+  const{error}=await sb.from('menu').update({enabled}).eq('id',id);
+  if(error){setSyncState('error');showToast('❌ Errore');return;}
+  setSyncState('online');await loadMenu();
+  showToast(enabled?'✓ Piatto abilitato':'⏸ Piatto disabilitato');
+}
+async function saveDish(id){
+  const d=menu.find(x=>x.id===id);if(!d)return;
+  const name=document.getElementById('edit-name-'+id).value.trim();
+  const cat=document.getElementById('edit-cat-'+id).value;
+  if(!name||!cat){showToast('❌ Dati non validi');return;}
+  const isFish=FISH_CATS.includes(cat);
+  let update={name,cat};
+  if(isFish){
+    const base_price=parseFloat(document.getElementById('edit-baseprice-'+id).value)||0;
+    const price_per_kg=parseFloat(document.getElementById('edit-ppk-'+id).value)||0;
+    update={...update,base_price,price_per_kg,price:base_price};
+  } else {
+    const price=parseFloat(document.getElementById('edit-price-'+id).value);
+    if(isNaN(price)||price<0){showToast('❌ Prezzo non valido');return;}
+    update={...update,price,base_price:0,price_per_kg:0};
+  }
+  setSyncState('syncing');
+  const{error}=await sb.from('menu').update(update).eq('id',id);
   if(error){setSyncState('error');showToast('❌ Errore salvataggio');return;}
   setSyncState('online');await loadMenu();showToast('Piatto aggiornato!');
 }
@@ -1093,10 +1202,14 @@ async function addDish(){
   const cat=document.getElementById('dish-cat-sel').value;
   const errEl=document.getElementById('add-dish-err');errEl.textContent='';
   if(!name){errEl.textContent='Inserisci il nome del piatto.';return;}
-  if(isNaN(price)||price<0){errEl.textContent='Inserisci un prezzo valido.';return;}
   if(!cat){errEl.textContent='Seleziona una categoria.';return;}
+  const isFish=FISH_CATS.includes(cat);
+  if(!isFish&&(isNaN(price)||price<0)){errEl.textContent='Inserisci un prezzo valido.';return;}
+  const row={id:'p'+Date.now(),cat,name,sort_order:menu.length,enabled:true};
+  if(isFish){row.price=price||0;row.base_price=price||0;row.price_per_kg=0;}
+  else{row.price=price;row.base_price=0;row.price_per_kg=0;}
   setSyncState('syncing');
-  const{error}=await sb.from('menu').insert({id:'p'+Date.now(),cat,name,price,sort_order:menu.length});
+  const{error}=await sb.from('menu').insert(row);
   if(error){setSyncState('error');showToast('❌ Errore salvataggio');return;}
   setSyncState('online');
   document.getElementById('dish-name').value='';
