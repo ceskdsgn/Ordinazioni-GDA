@@ -128,7 +128,7 @@ input,select,textarea{font-size:16px !important;}
 .cam-level{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .cam-level.hidden{display:none;}
 /* griglia categorie */
-.cat-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr auto;gap:12px;padding:12px 12px 82px;}
+.cat-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr 1fr 1fr;gap:12px;padding:12px 12px 82px;}
 .cat-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
 .cat-box:active{background:var(--acc-bg);transform:scale(.97);}
 .cat-box-emoji{font-size:40px;line-height:1;}
@@ -136,7 +136,7 @@ input,select,textarea{font-size:16px !important;}
 .cat-box-count{position:absolute;top:12px;right:12px;background:var(--acc-fill);color:var(--acc-on);font-size:13px;font-weight:700;border-radius:12px;padding:2px 9px;display:none;}
 .cat-box-count.visible{display:block;}
 /* box piatto personalizzato — occupa entrambe le colonne */
-.cat-box-custom{grid-column:1/-1;min-height:80px;background:#1a1916;border-color:#1a1916;flex-direction:row;gap:16px;justify-content:center;padding:0 24px;}
+.cat-box-custom{min-height:80px;background:#1a1916;border-color:#1a1916;flex-direction:row;gap:16px;justify-content:center;padding:0 24px;}
 .cat-box-custom:active{background:#2c2c29;}
 .cat-box-custom .cat-box-emoji{font-size:30px;}
 .cat-box-custom .cat-box-name{color:#f0ede8;font-size:20px;}
@@ -236,6 +236,7 @@ input,select,textarea{font-size:16px !important;}
 .cat-bar-0{background:#fff0e0;color:#c45000;}
 .cat-bar-1{background:#e6f4ea;color:#2e7d32;}
 .cat-bar-2{background:#e3edf9;color:#1565c0;}
+.cat-bar-3{background:#fdecea;color:#c62828;}
 .cat-bar-other{background:#f5f5f5;color:#555;}
 .cat-righe{flex:1;}
 .piatto-riga{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--border);}
@@ -371,6 +372,10 @@ input,select,textarea{font-size:16px !important;}
         <span class="cat-box-emoji">🥩</span>
         <span class="cat-box-name" style="color:#f0ede8">Secondo</span>
       </div>
+      <div class="cat-box" style="flex:1;background:#2c2c29;border-color:#38362f" onclick="openCustomForm('Contorni')">
+        <span class="cat-box-emoji">🥦</span>
+        <span class="cat-box-name" style="color:#f0ede8">Contorno</span>
+      </div>
     </div>
     <!-- step A2: sotto-categoria (non usato ma mantenuto per compatibilità) -->
     <div id="custom-step-subcat" style="display:none;flex-direction:column;gap:12px;padding:12px;flex:1">
@@ -470,6 +475,7 @@ const NUM_TAVOLI=20;
 const CAT_CONFIG=[
   {name:'Antipasti',emoji:'🥗'},{name:'Primi',emoji:'🍝',sub:[{name:'Primi di mare',emoji:'🦞'},{name:'Primi di terra',emoji:'🍝'}]},
   {name:'Secondi',emoji:'🥩',sub:[{name:'Secondi di mare',emoji:'🐟'},{name:'Secondi di carne',emoji:'🥩'}]},
+  {name:'Contorni',emoji:'🥦'},
   {name:'Dessert',emoji:'🍮'},
   {name:'Bevande',emoji:'🍷',sub:[{name:'Bibite',emoji:'🥤'},{name:'Vini',emoji:'🍷'},{name:'Birre',emoji:'🍺'}]},
   {name:'Bar',emoji:'☕'},
@@ -582,7 +588,7 @@ function renderCatGrid(){
   }).join('')+
   `<div class="cat-box cat-box-custom" onclick="openCustomPiatto()">
     <span class="cat-box-emoji">✏️</span>
-    <span class="cat-box-name">Piatto personalizzato</span>
+    <span class="cat-box-name">Personalizzato</span>
   </div>`;
 }
 function refreshCatCounts(){
@@ -916,8 +922,8 @@ function renderCucina(){
     const cats=[...catOrder.filter(c=>byCat[c]),...Object.keys(byCat).filter(c=>!catOrder.includes(c))];
     if(!cats.length) return '';
 
-    const CAT_LETTER={'Antipasti':'A','Primi di mare':'P','Primi di terra':'P','Secondi di mare':'S','Secondi di carne':'S','Bibite':'B','Birre':'B','Vini':'V'};
-    const CAT_COLOR_IDX={'Antipasti':0,'Primi di mare':1,'Primi di terra':1,'Secondi di mare':2,'Secondi di carne':2,'Dessert':3,'Bibite':4,'Vini':4,'Birre':4,'Bar':5};
+    const CAT_LETTER={'Antipasti':'A','Primi di mare':'P','Primi di terra':'P','Secondi di mare':'S','Secondi di carne':'S','Contorni':'C','Bibite':'B','Birre':'B','Vini':'V'};
+    const CAT_COLOR_IDX={'Antipasti':0,'Primi di mare':1,'Primi di terra':1,'Secondi di mare':2,'Secondi di carne':2,'Contorni':3,'Dessert':4,'Bibite':5,'Vini':5,'Birre':5,'Bar':6};
     const catHtml=cats.map(cat=>{
       const idx=CAT_COLOR_IDX[cat]!==undefined?CAT_COLOR_IDX[cat]:catOrder.indexOf(cat);
       const barCls=idx>=0?'cat-bar-'+idx:'cat-bar-other';
