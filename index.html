@@ -726,7 +726,7 @@ function renderPiattiList(cat){
           <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#1a1916;border:1.5px solid #4a4842;border-radius:10px;padding:5px 8px;">
             <input type="number" min="0" step="0.1" placeholder="0" value="${kgVal}"
               style="width:100%;background:transparent;border:none;color:#f0ede8;font-size:13px;font-weight:600;text-align:center;outline:none;-moz-appearance:textfield;"
-              oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" />
+              oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" onkeydown="if(event.key==='Enter')this.blur()" />
             <span style="font-size:11px;color:#6b6860;flex-shrink:0">kg</span>
           </div>
           <div class="inline-qty" style="flex:2;">
