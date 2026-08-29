@@ -709,11 +709,14 @@ function renderPiattiList(cat){
     const qty=order[p.id]||0;
     const ppk=Number(p.price_per_kg||0);
     const bp=Number(p.base_price||p.price||0);
-    const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'0.5';
+    const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'';
     if(isFish&&ppk>0){
       if(!window._kgMap) window._kgMap={};
-      if(window._kgMap[p.id]==null){window._kgMap[p.id]='0.5';const pm=menu.find(x=>x.id===p.id);if(pm)pm._dynPrice=bp+ppk*0.5;}
-      const dynPrice=`€${(bp+ppk*parseFloat(kgVal)).toFixed(2)}`;
+      if(window._kgMap[p.id]==null){window._kgMap[p.id]='';}
+      const pm=menu.find(x=>x.id===p.id);if(pm){pm._bp=bp;pm._ppk=ppk;}
+      const qty=order[p.id]||0;
+      const kg=parseFloat(kgVal)||0;
+      const dynPrice=kg>0?`€${(bp*qty+ppk*kg).toFixed(2)}`:`€${(bp*qty).toFixed(2)}`;
       return`<div class="cam-piatto-box" id="row-${p.id}">
         <div class="cam-piatto-box-top">
           <div class="cam-piatto-name">${esc(p.name)}</div>
@@ -721,7 +724,7 @@ function renderPiattiList(cat){
         </div>
         <div class="cam-piatto-box-bottom" style="justify-content:stretch;gap:6px;">
           <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#1a1916;border:1.5px solid #4a4842;border-radius:10px;padding:5px 8px;">
-            <input type="number" min="0" step="0.1" placeholder="0.5" value="${kgVal}"
+            <input type="number" min="0" step="0.1" placeholder="0" value="${kgVal}"
               style="width:100%;background:transparent;border:none;color:#f0ede8;font-size:13px;font-weight:600;text-align:center;outline:none;-moz-appearance:textfield;"
               oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" />
             <span style="font-size:11px;color:#6b6860;flex-shrink:0">kg</span>
@@ -752,20 +755,14 @@ function renderPiattiList(cat){
 function updateFishKg(id,val,bp,ppk){
   if(!window._kgMap) window._kgMap={};
   window._kgMap[id]=val;
-  // update price in the dish in memory so cart calculates correctly
   const p=menu.find(x=>x.id===id);
-  if(p&&val&&!isNaN(parseFloat(val))){
-    p._dynPrice=bp+ppk*parseFloat(val);
-  } else if(p){
-    delete p._dynPrice;
-  }
+  if(p){p._bp=bp;p._ppk=ppk;}
+  const qty=order[id]||0;
   const el=document.getElementById('dynprice-'+id);
   if(el){
-    if(val&&!isNaN(parseFloat(val))){
-      el.textContent=`€${(bp+ppk*parseFloat(val)).toFixed(2)}`;
-    } else {
-      el.textContent=`base €${bp.toFixed(2)} + €${ppk.toFixed(2)}/kg`;
-    }
+    const kg=val!==''&&!isNaN(parseFloat(val))?parseFloat(val):0;
+    const total=bp*qty||0+ppk*kg;
+    el.textContent=`€${total.toFixed(2)}`;
   }
   renderCart();setTotal();
 }
@@ -774,6 +771,17 @@ function changeQty(id,delta){
   if(order[id]<=0)delete order[id];
   const el=document.getElementById('iq-'+id);
   if(el){const q=order[id]||0;el.textContent=q;el.className='iq-val'+(q===0?' zero':'');}
+  // aggiorna display prezzo per piatti pesce
+  const p=menu.find(x=>x.id===id);
+  if(p&&p._ppk>0){
+    const priceEl=document.getElementById('dynprice-'+id);
+    if(priceEl){
+      const kg=window._kgMap&&window._kgMap[id]?parseFloat(window._kgMap[id]):0;
+      const qty=order[id]||0;
+      const total=p._bp*qty||0+p._ppk*kg;
+      priceEl.textContent=`€${total.toFixed(2)}`;
+    }
+  }
   updateFab();renderCart();
 }
 function updateFab(){
@@ -793,12 +801,16 @@ function renderCart(){
   el.innerHTML=ids.map(id=>{
     const p=menu.find(x=>x.id===id)||(window._customPiatti&&window._customPiatti[id]);
     if(!p) return'';
-    let unitPrice;
-    if(p.custom&&p.price===0){unitPrice=null;}
-    else if(p._dynPrice!=null){unitPrice=p._dynPrice;}
-    else{unitPrice=Number(p.price);}
-    const priceStr=unitPrice==null?'—':`€${(unitPrice*order[id]).toFixed(2)}`;
-    const kg=window._kgMap&&window._kgMap[id]?` (${parseFloat(window._kgMap[id]).toFixed(2)} kg)`:'';
+    let totalPrice;
+    if(p.custom&&p.price===0){totalPrice=null;}
+    else if(p._ppk>0&&window._kgMap&&window._kgMap[id]!=null){
+      // pesce: base*qty + ppk*kg
+      const kg=parseFloat(window._kgMap[id])||0;
+      totalPrice=p._bp*(order[id]||1)+p._ppk*kg;
+    }
+    else{totalPrice=Number(p.price)*(order[id]||0);}
+    const priceStr=totalPrice==null?'—':`€${totalPrice.toFixed(2)}`;
+    const kg=p._ppk>0&&window._kgMap&&window._kgMap[id]?` (${parseFloat(window._kgMap[id]).toFixed(2)} kg)`:'';
     return`<div class="cart-item">
       <div class="cart-item-name">${esc(p.name)}${kg}${p.custom?` <span style="font-size:11px;color:#9e9b96">(${esc(p.cat)})</span>`:''}</div>
       <div class="qty-ctrl">
@@ -828,8 +840,12 @@ function setTotal(){
     }
     const p=menu.find(x=>x.id===id);
     if(!p) continue;
-    if(p._dynPrice!=null) tot+=p._dynPrice*order[id];
-    else tot+=Number(p.price)*order[id];
+    if(p._ppk>0&&window._kgMap&&window._kgMap[id]!=null){
+      const kg=parseFloat(window._kgMap[id])||0;
+      tot+=p._bp*(order[id]||1)+p._ppk*kg;
+    } else {
+      tot+=Number(p.price)*order[id];
+    }
   }
   document.getElementById('cart-total').textContent='€'+tot.toFixed(2)+(hasUnpriced?' + da definire':'');
 }
@@ -843,7 +859,9 @@ async function sendComanda(){
       return{name:cp.name,qty,price:cp.price||0,cat:cp.cat,custom:true};
     }
     const p=menu.find(x=>x.id===id);
-    return{name:p?p.name:id,qty,price:p?Number(p.price):0,cat:p?p.cat:''};
+    const kg=(p&&p._ppk>0&&window._kgMap&&window._kgMap[id]!=null)?parseFloat(window._kgMap[id]):null;
+    const price=p?(p._ppk>0&&kg!=null?p._bp*(qty||1)+p._ppk*kg:Number(p.price)):0;
+    return{name:p?p.name:id,qty,price,cat:p?p.cat:'',kg:kg!=null?kg:undefined};
   });
   const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'attivo',ts:Date.now()};
   setSyncState('syncing');
@@ -907,7 +925,7 @@ function renderCucina(){
       const righe=byCat[cat].map(p=>`<div class="piatto-riga">
           <div class="piatto-riga-info">
             <span class="piatto-riga-qty">${p.qty}×</span>
-            <span class="piatto-riga-name">${esc(p.name)}</span>
+            <span class="piatto-riga-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:15px;font-weight:500;color:var(--text-pri)"> ${Number(p.kg).toFixed(2)} kg</span>`:''}</span>
           </div>
         </div>`).join('');
       return`<div class="cat-group"><div class="cat-bar ${barCls}">${letter}</div><div class="cat-righe">${righe}</div></div>`;
@@ -960,8 +978,9 @@ function renderTavoli(comandeAttive){
     if(!byTavolo[tv]) byTavolo[tv]={tavolo:tv,piatti:{},note:[],ids:[]};
     byTavolo[tv].ids.push(c.id);
     parsePiatti(c).forEach(p=>{
-      if(!byTavolo[tv].piatti[p.name]) byTavolo[tv].piatti[p.name]={name:p.name,qty:0,price:p.price};
-      byTavolo[tv].piatti[p.name].qty+=p.qty;
+      const key=p.kg!=null?`${p.name}__${p.kg}`:p.name;
+      if(!byTavolo[tv].piatti[key]) byTavolo[tv].piatti[key]={name:p.name,qty:0,price:p.price,kg:p.kg!=null?p.kg:null};
+      byTavolo[tv].piatti[key].qty+=p.qty;
     });
     if(c.note) byTavolo[tv].note.push(c.note);
   });
@@ -984,7 +1003,7 @@ function renderTavoli(comandeAttive){
       </div>
       <div class="tavolo-card-body">
         ${righe.map(p=>`<div class="tavolo-piatto-line">
-          <span class="tavolo-piatto-name">${esc(p.name)}</span>
+          <span class="tavolo-piatto-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:12px;font-weight:600;color:var(--text-pri)"> ${Number(p.kg).toFixed(2)} kg</span>`:''}</span>
           <span class="tavolo-piatto-qty">${p.qty}×</span>
           <span class="tavolo-piatto-price">${Number(p.price)===0?'??':'€'+(Number(p.price)*p.qty).toFixed(2)}</span>
         </div>`).join('')}
