@@ -200,8 +200,8 @@ function renderPiattiList(cat){
         </div>
         <div class="cam-piatto-box-bottom" style="flex-direction:column;gap:6px;">
           <div class="wine-format-sel" style="padding:0;">
-            <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')">🥂 Calice</button>
-            <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" onclick="setWineFormat('${p.id}','Bottiglia')">🍾 Bottiglia</button>
+            <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')"><span class="wfe">🥂</span>Calice</button>
+            <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" onclick="setWineFormat('${p.id}','Bottiglia')"><span class="wfe">🍾</span>Bottiglia</button>
           </div>
           <div class="inline-qty" style="width:100%;">
             <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>

@@ -309,7 +309,8 @@ input,select,textarea{font-size:16px !important;}
 
 /* ── WINE FORMAT ── */
 .wine-format-sel{display:flex;gap:8px;padding:6px 0 2px;}
-.wine-fmt-btn{flex:1;padding:7px 0;border-radius:var(--radius);border:1.5px solid var(--border-s);background:transparent;color:var(--text-sec);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
+.wine-fmt-btn{flex:1;padding:7px 0;border-radius:var(--radius);border:1.5px solid var(--border-s);background:transparent;color:var(--text-sec);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s,border-color .12s;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;}
+.wine-fmt-btn span.wfe{font-size:20px;line-height:1;}
 .wine-fmt-btn.active{background:var(--acc-fill);color:var(--acc-on);border-color:var(--acc-fill);}
 
 /* ── COMANDE CANCELLATE ── */
