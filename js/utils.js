@@ -9,6 +9,7 @@ function onTavoloSelect(){
     copertiCount=2;
     document.getElementById('coperti-val').textContent=copertiCount;
     wrap.classList.remove('hidden');
+    if(!document.getElementById('cam-level-0').classList.contains('hidden')) showSalaLevel1();
   } else {
     wrap.classList.add('hidden');
   }
@@ -43,6 +44,7 @@ function showTab(tab){
   document.querySelector('.topbar').classList.toggle('dark-nav', tab==='cameriere');
   const m={cameriere:'sala',cucina:'cuci',dolci:'dolci',tavoli:'tavo',menu:'menu'};
   document.getElementById('tab-'+m[tab]).classList.add('active');
+  if(tab==='cameriere') loadSalaLevel0();
   if(tab==='cucina') loadCucina(true);
   if(tab==='dolci') loadDolci();
   if(tab==='tavoli') loadTavoli();

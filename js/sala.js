@@ -1,3 +1,45 @@
+async function loadSalaLevel0(){
+  const{data}=await sb.from('comande').select('tavolo').eq('stato','attivo');
+  const activeTavoli=[...new Set((data||[]).map(c=>c.tavolo))].sort((a,b)=>Number(a)-Number(b));
+  const grid=document.getElementById('sala-active-grid');
+  if(activeTavoli.length){
+    grid.innerHTML=activeTavoli.map(tv=>
+      `<button class="sala-tav-btn" onclick="openSalaTable('${tv}')">Tavolo ${tv}</button>`
+    ).join('');
+  } else {
+    grid.innerHTML='<div class="sala-tav-empty">Nessun tavolo attivo</div>';
+  }
+  const sel=document.getElementById('sel-tavolo');
+  sel.value='';sel.disabled=false;
+  document.getElementById('cam-tavolo-bar').style.display='';
+  document.getElementById('cam-tavolo-back').style.display='none';
+  document.getElementById('coperti-wrap').classList.add('hidden');
+  copertiCount=0;
+  document.getElementById('cam-level-0').classList.remove('hidden');
+  document.getElementById('cam-level-1').classList.add('hidden');
+  document.getElementById('cam-level-2').classList.add('hidden');
+  document.getElementById('cam-level-3').classList.add('hidden');
+}
+
+function openSalaTable(tvNum){
+  const sel=document.getElementById('sel-tavolo');
+  sel.value=tvNum;
+  sel.disabled=true;
+  document.getElementById('cam-tavolo-back').style.display='';
+  document.getElementById('coperti-wrap').classList.add('hidden');
+  copertiCount=0;
+  showSalaLevel1();
+}
+
+function showSalaLevel1(){
+  document.getElementById('cam-tavolo-back').style.display='';
+  document.getElementById('cam-level-0').classList.add('hidden');
+  document.getElementById('cam-level-1').classList.remove('hidden');
+  document.getElementById('cam-level-2').classList.add('hidden');
+  document.getElementById('cam-level-3').classList.add('hidden');
+  updateFab();
+}
+
 function renderCatGrid(){
   document.getElementById('cat-grid').innerHTML=CAT_CONFIG.map(cfg=>{
     // count includes sub-categories if present
@@ -26,6 +68,7 @@ function openCategory(catName){
   _currentParentCat=null;
   const cfg=CAT_CONFIG.find(c=>c.name===catName);
   if(cfg&&cfg.sub){
+    document.getElementById('cam-tavolo-bar').style.display='none';
     document.getElementById('cam-level-1').classList.add('hidden');
     document.getElementById('cam-level-2').classList.remove('hidden');
     document.getElementById('cam-piatti-title').textContent=catName;
@@ -42,6 +85,7 @@ function openCategory(catName){
       }).join('');
     return;
   }
+  document.getElementById('cam-tavolo-bar').style.display='none';
   document.getElementById('cam-level-1').classList.add('hidden');
   document.getElementById('cam-level-2').classList.remove('hidden');
   document.getElementById('cam-piatti-title').textContent=catName;
@@ -61,11 +105,13 @@ function goBackToCategories(){
   document.getElementById('cam-level-2').classList.add('hidden');
   document.getElementById('cam-level-3').classList.add('hidden');
   document.getElementById('cam-level-1').classList.remove('hidden');
+  document.getElementById('cam-tavolo-bar').style.display='';
   document.querySelector('#cam-level-2 .back-btn').onclick=goBackToCategories;
   refreshCatCounts();
 }
 
 function openCustomPiatto(){
+  document.getElementById('cam-tavolo-bar').style.display='none';
   document.getElementById('cam-level-1').classList.add('hidden');
   document.getElementById('cam-level-3').classList.remove('hidden');
   document.getElementById('custom-step-cat').style.display='flex';
@@ -361,9 +407,7 @@ async function sendComanda(){
   copertiCount=0;
   document.getElementById('coperti-wrap').classList.add('hidden');
   closeCart();updateFab();renderCart();renderCatGrid();
-  // torna alla schermata iniziale (griglia categorie)
-  document.getElementById('cam-level-1').classList.remove('hidden');
-  document.getElementById('cam-level-2').classList.add('hidden');
   showToast('✅ Comanda tavolo '+tv+' inviata!');
+  await loadSalaLevel0();
 }
 

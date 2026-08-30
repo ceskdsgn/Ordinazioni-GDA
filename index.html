@@ -72,7 +72,8 @@
 
 <!-- ══════════════ SALA ══════════════ -->
 <div id="screen-cameriere" class="screen visible">
-  <div class="cam-tavolo-bar">
+  <div class="cam-tavolo-bar" id="cam-tavolo-bar">
+    <button class="back-btn" id="cam-tavolo-back" onclick="loadSalaLevel0()" style="display:none">←</button>
     <select id="sel-tavolo" onchange="onTavoloSelect()">
       <option value="">— Seleziona tavolo —</option>
     </select>
@@ -83,7 +84,10 @@
       <span class="coperti-label">cop.</span>
     </div>
   </div>
-  <div class="cam-level" id="cam-level-1">
+  <div class="cam-level" id="cam-level-0">
+    <div class="sala-active-grid" id="sala-active-grid"></div>
+  </div>
+  <div class="cam-level hidden" id="cam-level-1">
     <div class="cat-grid" id="cat-grid"></div>
   </div>
   <div class="cam-level hidden" id="cam-level-2">

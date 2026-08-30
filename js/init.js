@@ -62,6 +62,7 @@ async function loadMenu(){
   menu=data.length?data:await seedDefaultMenu();
   setSyncState('online');
   renderCatGrid();renderDishList();renderCatSelect();
+  loadSalaLevel0();
 }
 async function seedDefaultMenu(){
   const d=[
@@ -87,6 +88,8 @@ function subscribeRealtime(){
       await loadCucina();
       if(document.getElementById('screen-dolci').classList.contains('visible')) await loadDolci();
       if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
+      if(document.getElementById('screen-cameriere').classList.contains('visible')&&
+         !document.getElementById('cam-level-0').classList.contains('hidden')) await loadSalaLevel0();
     })
     .subscribe(s=>{
       if(s==='SUBSCRIBED')setSyncState('online');
