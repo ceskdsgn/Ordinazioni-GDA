@@ -57,6 +57,38 @@ function backToTavoliGrid(){
   document.getElementById('tav-level-1').style.display='';
 }
 
+async function changeCopertiConti(tavoloKey,delta){
+  const tv=window._tavoliData&&window._tavoliData[tavoloKey];
+  if(!tv) return;
+  const cKey=Object.keys(tv.piatti).find(k=>tv.piatti[k].cat==='Coperti');
+  if(!cKey) return;
+  const newQty=Math.max(0,tv.piatti[cKey].qty+delta);
+  for(const id of tv.ids){
+    const c=window._comandeMap[id];
+    if(!c) continue;
+    const piatti=parsePiatti(c);
+    const idx=piatti.findIndex(p=>p.cat==='Coperti');
+    if(idx===-1) continue;
+    piatti[idx].qty=newQty;
+    setSyncState('syncing');
+    const{error}=await sb.from('comande').update({piatti:JSON.stringify(piatti)}).eq('id',id);
+    if(error){setSyncState('error');showToast('❌ Errore');return;}
+    c.piatti=JSON.stringify(piatti);
+    tv.piatti[cKey].qty=newQty;
+    break;
+  }
+  setSyncState('online');
+  const qtyEl=document.getElementById('coperti-qty-'+tavoloKey);
+  if(qtyEl) qtyEl.textContent=newQty;
+  const unitPrice=Number(tv.piatti[cKey].price);
+  const priceEl=document.getElementById('coperti-price-'+tavoloKey);
+  if(priceEl) priceEl.textContent='€'+(newQty*unitPrice).toFixed(2);
+  const allRighe=Object.values(tv.piatti);
+  const totale=allRighe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
+  const totalEl=document.getElementById('tavolo-total-'+tavoloKey);
+  if(totalEl) totalEl.textContent='€'+totale.toFixed(2);
+}
+
 function buildTavoloCard(tv){
   const tvKey=esc(tv.tavolo);
   const righe=Object.values(tv.piatti).sort((a,b)=>{
@@ -75,6 +107,17 @@ function buildTavoloCard(tv){
     const header=label!==lastLabel?`<div class="tavolo-cat-header">${label}</div>`:'';
     lastLabel=label;
     const priceStr=Number(p.price)===0?'??':'€'+(p.kg!=null?Number(p.price):Number(p.price)*p.qty).toFixed(2);
+    if(p.cat==='Coperti'){
+      return`${header}<div class="piatto-swipe-inner" style="padding:8px 0;">
+        <span class="tavolo-piatto-name" style="flex:1">${esc(p.name)}</span>
+        <div class="coperti-qty-ctrl">
+          <button class="coperti-qty-btn" onclick="changeCopertiConti('${tvKey}',-1)">−</button>
+          <span class="coperti-qty-val" id="coperti-qty-${tvKey}">${p.qty}</span>
+          <button class="coperti-qty-btn" onclick="changeCopertiConti('${tvKey}',1)">+</button>
+        </div>
+        <span class="tavolo-piatto-price" id="coperti-price-${tvKey}">${priceStr}</span>
+      </div>`;
+    }
     return`${header}<div class="piatto-swipe-wrap" data-tavolo="${tvKey}" data-key="${keyEnc}">
       <div class="piatto-swipe-del">🗑</div>
       <div class="piatto-swipe-inner">
