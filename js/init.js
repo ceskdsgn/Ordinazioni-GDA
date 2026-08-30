@@ -1,3 +1,49 @@
+/* ── PIN ── */
+let _pinBuffer='';
+
+function pinCheckStored(){
+  const ts=localStorage.getItem('rist_pin_ts');
+  return ts && (Date.now()-parseInt(ts)<PIN_EXPIRY_MS);
+}
+
+function pinUnlock(){
+  localStorage.setItem('rist_pin_ts',Date.now().toString());
+  document.getElementById('pin-screen').classList.add('unlocked');
+}
+
+function pinUpdateDots(){
+  document.querySelectorAll('.pin-dot').forEach((d,i)=>{
+    d.classList.toggle('filled',i<_pinBuffer.length);
+  });
+}
+
+function pinKey(digit){
+  if(_pinBuffer.length>=4) return;
+  _pinBuffer+=digit;
+  pinUpdateDots();
+  if(_pinBuffer.length===4){
+    if(_pinBuffer===PIN_CODE){
+      pinUnlock();
+    } else {
+      const dots=document.getElementById('pin-dots');
+      dots.classList.add('shake');
+      document.getElementById('pin-err').textContent='Codice errato';
+      setTimeout(()=>{
+        dots.classList.remove('shake');
+        _pinBuffer='';
+        pinUpdateDots();
+        document.getElementById('pin-err').textContent='';
+      },400);
+    }
+  }
+}
+
+function pinDel(){
+  if(!_pinBuffer.length) return;
+  _pinBuffer=_pinBuffer.slice(0,-1);
+  pinUpdateDots();
+}
+
 async function init(){
   setSyncState('syncing');
   const sel=document.getElementById('sel-tavolo');
@@ -56,4 +102,5 @@ function subscribeRealtime(){
 }
 
 
+if(pinCheckStored()) pinUnlock();
 init();

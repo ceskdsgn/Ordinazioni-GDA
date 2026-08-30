@@ -78,11 +78,75 @@ function renderCucina(silent=false){
 
 function chiudiModale(){document.getElementById('modal-cancella').classList.remove('open');}
 
+function _storeCancelTime(id){
+  const times=JSON.parse(localStorage.getItem('rist_cancel_times')||'{}');
+  times[id]=Date.now();
+  const cutoff=Date.now()-7*60*60*1000;
+  Object.keys(times).forEach(k=>{if(times[k]<cutoff)delete times[k];});
+  localStorage.setItem('rist_cancel_times',JSON.stringify(times));
+}
+
 async function cancellaComanda(id){
   setSyncState('syncing');
   const{error}=await sb.from('comande').update({stato:'eliminato_cucina'}).eq('id',id);
   if(error){setSyncState('error');showToast('❌ Errore cancellazione');return;}
+  _storeCancelTime(id);
   setSyncState('online');showToast('Comanda cancellata');
   await loadCucina();
+}
+
+function openComandeCancellate(){
+  document.getElementById('cancellate-panel').classList.add('open');
+  renderComandeCancellate();
+}
+
+function closeComandeCancellate(){
+  document.getElementById('cancellate-panel').classList.remove('open');
+}
+
+async function renderComandeCancellate(){
+  const el=document.getElementById('cancellate-list');
+  el.innerHTML='<div class="cancellate-empty">Caricamento...</div>';
+  const times=JSON.parse(localStorage.getItem('rist_cancel_times')||'{}');
+  const cutoff6h=Date.now()-6*60*60*1000;
+  const recentIds=Object.keys(times).filter(id=>times[id]>cutoff6h);
+  if(!recentIds.length){el.innerHTML='<div class="cancellate-empty">Nessuna comanda cancellata</div>';return;}
+  const{data,error}=await sb.from('comande').select('*').eq('stato','eliminato_cucina').in('id',recentIds);
+  if(error||!data||!data.length){el.innerHTML='<div class="cancellate-empty">Nessuna comanda cancellata</div>';return;}
+  // ordina per orario di cancellazione decrescente
+  data.sort((a,b)=>(times[b.id]||0)-(times[a.id]||0));
+  const CAT_LETTER={'Antipasti':'A','Primi di mare':'P','Primi di terra':'P','Secondi di mare':'S','Secondi di carne':'S','Contorni':'C','Bibite':'B','Birre':'B','Vini':'V'};
+  const CAT_COLOR_IDX={'Antipasti':0,'Primi di mare':1,'Primi di terra':1,'Secondi di mare':2,'Secondi di carne':2,'Contorni':3,'Dessert':4,'Bibite':5,'Vini':5,'Birre':5,'Bar':6};
+  const catOrder=CAT_CONFIG.map(x=>x.name);
+  const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar','Coperti'];
+  el.innerHTML=data.map(c=>{
+    const time=new Date(times[c.id]).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    const piatti=parsePiatti(c);
+    const byCat={};
+    piatti.forEach(p=>{
+      const k=p.cat||'Altro';
+      if(SOLO_TAVOLI.includes(k))return;
+      if(!byCat[k])byCat[k]=[];
+      byCat[k].push(p);
+    });
+    const cats=[...catOrder.filter(c=>byCat[c]),...Object.keys(byCat).filter(c=>!catOrder.includes(c))];
+    const catHtml=cats.map(cat=>{
+      const idx=CAT_COLOR_IDX[cat]!==undefined?CAT_COLOR_IDX[cat]:catOrder.indexOf(cat);
+      const barCls=idx>=0?'cat-bar-'+idx:'cat-bar-other';
+      const letter=CAT_LETTER[cat]||cat.charAt(0).toUpperCase();
+      const righe=byCat[cat].map(p=>`<div class="piatto-riga"><div class="piatto-riga-info"><span class="piatto-riga-qty">${p.qty}×</span><span class="piatto-riga-name">${esc(p.name)}</span></div></div>`).join('');
+      return`<div class="cat-group"><div class="cat-bar ${barCls}">${letter}</div><div class="cat-righe">${righe}</div></div>`;
+    }).join('');
+    return`<div class="comanda-card">
+      <div class="comanda-head">
+        <div class="comanda-tavolo-wrap">
+          <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+          <span class="comanda-time">${time}</span>
+        </div>
+      </div>
+      ${catHtml}
+      ${c.note?`<div class="comanda-note"><span class="comanda-note-label">Note</span> ${esc(c.note)}</div>`:''}
+    </div>`;
+  }).join('');
 }
 

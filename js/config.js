@@ -2,6 +2,9 @@ const SUPA_URL='https://sptwxscoqzbazpojgikv.supabase.co';
 const SUPA_KEY='sb_publishable_Kmndi3DKhim7hNM1V8maEQ_b17Hl2YA';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
+const PIN_CODE='2001';
+const PIN_EXPIRY_MS=24*60*60*1000;
+
 let menu=[], order={}, comande=[], cucinaSeenIds=new Set();
 let copertiCount=2;
 const NUM_TAVOLI=60;

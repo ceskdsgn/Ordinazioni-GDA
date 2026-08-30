@@ -29,6 +29,35 @@
 </head>
 <body>
 
+<!-- ══════════════ PIN SCREEN ══════════════ -->
+<div id="pin-screen">
+  <div class="pin-box">
+    <div class="pin-title">Accesso</div>
+    <div class="pin-dots" id="pin-dots">
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+    </div>
+    <div class="pin-err" id="pin-err"></div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key pin-key-empty"></button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
+    </div>
+  </div>
+</div>
+
+
 
 <nav class="topbar">
   <div class="topbar-title"><span id="topbar-logo-fallback" style="display:none">GDA</span> <span class="sync-dot" id="sync-dot"></span></div>
@@ -36,7 +65,7 @@
     <button class="tab-bar-btn active" id="tab-sala"  onclick="showTab('cameriere')">Sala</button>
     <button class="tab-bar-btn"        id="tab-cuci"  onclick="showTab('cucina')">Cucina <span id="cucina-tab-count" style="background:rgba(0,0,0,.12);border-radius:10px;padding:1px 7px;font-size:12px;margin-left:2px;display:none">0</span></button>
     <button class="tab-bar-btn"        id="tab-dolci" onclick="showTab('dolci')">Dolci <span id="dolci-tab-count" style="background:rgba(0,0,0,.12);border-radius:10px;padding:1px 7px;font-size:12px;margin-left:2px;display:none">0</span></button>
-    <button class="tab-bar-btn"        id="tab-tavo"  onclick="showTab('tavoli')">Tavoli</button>
+    <button class="tab-bar-btn"        id="tab-tavo"  onclick="showTab('tavoli')">Conti</button>
     <button class="tab-bar-btn"        id="tab-menu"  onclick="showTab('menu')">Menu</button>
   </div>
 </nav>
@@ -131,6 +160,14 @@
 <!-- ══════════════ CUCINA ══════════════ -->
 <div id="screen-cucina" class="screen">
   <div class="cucina-kanban" id="cucina-grid"></div>
+  <button class="cancellate-fab" onclick="openComandeCancellate()">🗑 Cancellate</button>
+  <div class="cancellate-panel" id="cancellate-panel">
+    <div class="cancellate-bar">
+      <button class="back-btn" onclick="closeComandeCancellate()">←</button>
+      <span class="cancellate-title">Comande Cancellate</span>
+    </div>
+    <div class="cancellate-list" id="cancellate-list"></div>
+  </div>
 </div>
 
 <!-- ══════════════ DOLCI ══════════════ -->

@@ -128,11 +128,33 @@ function addCustomPiatto(){
   renderCart();
   showToast('✓ Piatto personalizzato aggiunto');
 }
+function getWineUnitPrice(p,fmt){
+  const bottPrice=Number(p.price);
+  if(fmt==='Bottiglia') return bottPrice;
+  if(/^locale$/i.test(p.name.trim())) return 5;
+  return bottPrice/5;
+}
+
+function setWineFormat(id,fmt){
+  if(!window._wineFormat) window._wineFormat={};
+  window._wineFormat[id]=fmt;
+  document.querySelectorAll(`.wine-fmt-btn[data-wid="${id}"]`).forEach(b=>{
+    b.classList.toggle('active',b.dataset.fmt===fmt);
+  });
+  const p=menu.find(x=>x.id===id);
+  if(p){
+    const el=document.getElementById('wine-price-'+id);
+    if(el) el.textContent='€'+getWineUnitPrice(p,fmt).toFixed(2);
+  }
+  renderCart();setTotal();
+}
+
 function renderPiattiList(cat){
   const piatti=menu.filter(p=>p.cat===cat&&p.enabled!==false);
   const el=document.getElementById('cam-piatti-list');
   el.style.cssText='';
   if(!piatti.length){el.innerHTML='<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--text-mut)">Nessun piatto disponibile</div>';return;}
+  const isWine=cat==='Vini';
   const isFish=FISH_CATS.includes(cat);
   el.innerHTML=piatti.map(p=>{
     const qty=order[p.id]||0;
@@ -159,6 +181,31 @@ function renderPiattiList(cat){
             <span style="font-size:11px;color:#6b6860;flex-shrink:0">kg</span>
           </div>
           <div class="inline-qty" style="flex:2;">
+            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>
+            <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
+            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    if(isWine){
+      if(!window._wineFormat) window._wineFormat={};
+      const bottOnly=/piccolo|grande/i.test(p.name);
+      if(bottOnly) window._wineFormat[p.id]='Bottiglia';
+      else if(!window._wineFormat[p.id]) window._wineFormat[p.id]='Calice';
+      const fmt=window._wineFormat[p.id];
+      const displayPrice=getWineUnitPrice(p,fmt);
+      return`<div class="cam-piatto-box">
+        <div class="cam-piatto-box-top">
+          <div class="cam-piatto-name">${esc(p.name)}</div>
+          <div class="cam-piatto-price" id="wine-price-${p.id}">€${displayPrice.toFixed(2)}</div>
+        </div>
+        <div class="wine-format-sel">
+          ${bottOnly?'':`<button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')">🥂 Calice</button>`}
+          <button class="wine-fmt-btn${(bottOnly||fmt==='Bottiglia')?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" ${bottOnly?'':` onclick="setWineFormat('${p.id}','Bottiglia')"`}>🍾 Bottiglia</button>
+        </div>
+        <div class="cam-piatto-box-bottom">
+          <div class="inline-qty" style="width:100%;">
             <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>
             <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
             <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
@@ -237,11 +284,15 @@ function renderCart(){
       const kg=parseFloat(window._kgMap[id])||0;
       totalPrice=p._bp*(order[id]||1)+p._ppk*kg;
     }
+    else if(p.cat==='Vini'&&window._wineFormat&&window._wineFormat[id]){
+      totalPrice=getWineUnitPrice(p,window._wineFormat[id])*(order[id]||0);
+    }
     else{totalPrice=Number(p.price)*(order[id]||0);}
     const priceStr=totalPrice==null?'—':`€${totalPrice.toFixed(2)}`;
     const kg=p._ppk>0&&window._kgMap&&window._kgMap[id]?` (${parseFloat(window._kgMap[id]).toFixed(2)} kg)`:'';
+    const wfmt=p.cat==='Vini'&&window._wineFormat&&window._wineFormat[id]?` — ${window._wineFormat[id]}`:'';
     return`<div class="cart-item">
-      <div class="cart-item-name">${esc(p.name)}${kg}${p.custom?` <span style="font-size:11px;color:#9e9b96">(${esc(p.cat)})</span>`:''}</div>
+      <div class="cart-item-name">${esc(p.name)}${kg}${wfmt}${p.custom?` <span style="font-size:11px;color:#9e9b96">(${esc(p.cat)})</span>`:''}</div>
       <div class="qty-ctrl">
         <button class="qty-btn" onclick="cartCQ('${id}',-1)">−</button>
         <span class="qty-val-c">${order[id]}</span>
@@ -272,6 +323,8 @@ function setTotal(){
     if(p._ppk>0&&window._kgMap&&window._kgMap[id]!=null){
       const kg=parseFloat(window._kgMap[id])||0;
       tot+=p._bp*(order[id]||1)+p._ppk*kg;
+    } else if(p.cat==='Vini'&&window._wineFormat&&window._wineFormat[id]){
+      tot+=getWineUnitPrice(p,window._wineFormat[id])*order[id];
     } else {
       tot+=Number(p.price)*order[id];
     }
@@ -289,8 +342,10 @@ async function sendComanda(){
     }
     const p=menu.find(x=>x.id===id);
     const kg=(p&&p._ppk>0&&window._kgMap&&window._kgMap[id]!=null)?parseFloat(window._kgMap[id]):null;
-    const price=p?(p._ppk>0&&kg!=null?p._bp*(qty||1)+p._ppk*kg:Number(p.price)):0;
-    return{name:p?p.name:id,qty,price,cat:p?p.cat:'',kg:kg!=null?kg:undefined};
+    const formato=p&&p.cat==='Vini'&&window._wineFormat&&window._wineFormat[id]?window._wineFormat[id]:undefined;
+    const unitPrice=formato&&p?getWineUnitPrice(p,formato):Number(p?.price||0);
+    const price=p?(p._ppk>0&&kg!=null?p._bp*(qty||1)+p._ppk*kg:unitPrice):0;
+    return{name:p?p.name:id,qty,price,cat:p?p.cat:'',kg:kg!=null?kg:undefined,formato};
   });
   if(copertiCount>0) piatti.unshift({id:'_coperti',name:'Coperti',qty:copertiCount,price:3,cat:'Coperti'});
   const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'attivo',ts:Date.now()};
@@ -301,6 +356,7 @@ async function sendComanda(){
   order={};
   if(window._customPiatti) window._customPiatti={};
   if(window._kgMap) window._kgMap={};
+  if(window._wineFormat) window._wineFormat={};
   menu.forEach(p=>delete p._dynPrice);
   document.getElementById('order-note').value='';
   document.getElementById('sel-tavolo').value='';

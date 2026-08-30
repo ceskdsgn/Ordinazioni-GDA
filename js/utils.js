@@ -26,7 +26,7 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 function setSyncState(s){document.getElementById('sync-dot').className='sync-dot '+s;}
 
 function updateTabCounts(){
-  const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar'];
+  const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar','Coperti'];
   const cucinaCount=comande.filter(c=>parsePiatti(c).some(p=>!SOLO_TAVOLI.includes(p.cat||'Altro'))).length;
   const dolciCount=comande.filter(c=>parsePiatti(c).some(p=>p.cat==='Dessert')).length;
   const cucinaEl=document.getElementById('cucina-tab-count');

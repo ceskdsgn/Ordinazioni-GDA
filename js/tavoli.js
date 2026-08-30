@@ -16,8 +16,9 @@ function renderTavoli(comandeAttive){
     byTavolo[tv].ids.push(c.id);
     parsePiatti(c).forEach(p=>{
       const key=p.kg!=null?`${p.name}__${p.kg}`:p.name;
-      if(!byTavolo[tv].piatti[key]) byTavolo[tv].piatti[key]={name:p.name,qty:0,price:p.price,kg:p.kg!=null?p.kg:null,cat:p.cat||''};
+      if(!byTavolo[tv].piatti[key]) byTavolo[tv].piatti[key]={name:p.name,qty:0,price:p.kg!=null?0:p.price,kg:p.kg!=null?p.kg:null,cat:p.cat||''};
       byTavolo[tv].piatti[key].qty+=p.qty;
+      if(p.kg!=null) byTavolo[tv].piatti[key].price+=Number(p.price);
     });
     if(c.note) byTavolo[tv].note.push(c.note);
   });
@@ -30,7 +31,7 @@ function renderTavoli(comandeAttive){
 
   el.innerHTML=sorted.map(tv=>{
     const righe=Object.values(tv.piatti);
-    const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+    const totale=righe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
     const hasCustom=righe.some(p=>Number(p.price)===0);
     const totaleStr=hasCustom?`€${totale.toFixed(2)}+`:  `€${totale.toFixed(2)}`;
     const tvKey=esc(tv.tavolo);
@@ -63,7 +64,7 @@ function buildTavoloCard(tv){
     const ob=TAVOLI_CAT_ORDER[b.cat]!==undefined?TAVOLI_CAT_ORDER[b.cat]:99;
     return oa-ob;
   });
-  const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+  const totale=righe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
   const hasCustom=righe.some(p=>Number(p.price)===0);
   const totaleStr=hasCustom?`€${totale.toFixed(2)} + ??`:`€${totale.toFixed(2)}`;
 
@@ -73,12 +74,12 @@ function buildTavoloCard(tv){
     const keyEnc=encodeURIComponent(p.kg!=null?`${p.name}__${p.kg}`:p.name);
     const header=label!==lastLabel?`<div class="tavolo-cat-header">${label}</div>`:'';
     lastLabel=label;
-    const priceStr=Number(p.price)===0?'??':'€'+(Number(p.price)*p.qty).toFixed(2);
+    const priceStr=Number(p.price)===0?'??':'€'+(p.kg!=null?Number(p.price):Number(p.price)*p.qty).toFixed(2);
     return`${header}<div class="piatto-swipe-wrap" data-tavolo="${tvKey}" data-key="${keyEnc}">
       <div class="piatto-swipe-del">🗑</div>
       <div class="piatto-swipe-inner">
         <span class="tavolo-piatto-qty">${p.qty}×</span>
-        <span class="tavolo-piatto-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:12px;font-weight:600"> ${Number(p.kg).toFixed(2)} kg</span>`:''}</span>
+        <span class="tavolo-piatto-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:12px;font-weight:600"> ${Number(p.kg).toFixed(2)} kg</span>`:''}${p.formato?`<span style="font-size:12px;font-weight:500;color:var(--text-sec)"> — ${esc(p.formato)}</span>`:''}</span>
         <span class="tavolo-piatto-price">${priceStr}</span>
       </div>
     </div>`;
@@ -148,7 +149,7 @@ async function deletePiattoVisuale(wrapEl){
     }
     delete window._tavoliData[tavolo].piatti[key];
     const righe=Object.values(window._tavoliData[tavolo].piatti);
-    const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+    const totale=righe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
     const hasCustom=righe.some(p=>Number(p.price)===0);
     const totalEl=document.getElementById('tavolo-total-'+tavolo);
     if(totalEl)totalEl.textContent=hasCustom?`€${totale.toFixed(2)} + ??`:`€${totale.toFixed(2)}`;
@@ -170,7 +171,7 @@ function stampaConto(tavolo){
   const righe=Object.values(tv.piatti);
   const note=tv.note;
   const ora=new Date().toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+  const totale=righe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
   const hasCustom=righe.some(p=>Number(p.price)===0);
 
   const righeHtml=righe.map(p=>`
