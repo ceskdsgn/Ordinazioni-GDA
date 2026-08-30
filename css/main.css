@@ -262,7 +262,7 @@ input,select,textarea{font-size:16px !important;}
 .tavolo-piatto-price{color:var(--text-sec);min-width:52px;text-align:right;font-size:15px;flex-shrink:0;}
 .tavolo-cat-header{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a1916;padding:14px 0 5px;margin-top:10px;border-top:1.5px solid #1a1916;}
 .tavolo-card-body>.tavolo-cat-header:first-child{border-top:none;margin-top:0;}
-.tavolo-empty{text-align:center;padding:40px 20px;color:var(--text-mut);font-size:14px;}
+.tavolo-empty{text-align:center;padding:40px 20px;color:#1a1916;font-size:14px;font-weight:500;width:100%;}
 
 /* ════ MENU MANAGER ════ */
 #screen-menu{min-height:calc(100vh - 48px);}
@@ -308,7 +308,7 @@ input,select,textarea{font-size:16px !important;}
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1916;color:#f0ede8;padding:9px 18px;border-radius:var(--radius);font-size:14px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;white-space:nowrap;pointer-events:none;}
 
 /* ── WINE FORMAT ── */
-.wine-format-sel{display:flex;gap:8px;padding:6px 0 2px;}
+.wine-format-sel{display:flex;gap:8px;padding:6px 0 2px;width:100%;}
 .wine-fmt-btn{flex:1;padding:7px 0;border-radius:var(--radius);border:1.5px solid var(--border-s);background:transparent;color:var(--text-sec);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s,color .12s,border-color .12s;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;}
 .wine-fmt-btn span.wfe{font-size:20px;line-height:1;}
 .wine-fmt-btn.active{background:var(--acc-fill);color:var(--acc-on);border-color:var(--acc-fill);}
@@ -317,13 +317,12 @@ input,select,textarea{font-size:16px !important;}
 .cancellate-fab{position:absolute;bottom:18px;right:18px;background:#2e2b27;color:#f0ede8;border:none;border-radius:24px;padding:14px 22px;font-size:16px;font-weight:600;cursor:pointer;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.25);display:flex;align-items:center;gap:8px;white-space:nowrap;}
 .cancellate-fab:active{background:#444039;}
 .cancellate-panel{position:fixed;inset:0;background:#dedad4;display:flex;flex-direction:column;z-index:600;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
-.cancellate-bar{border-bottom-color:#b5b2ac;}
 .cancellate-bar .back-btn{border:3px solid #1a1916;color:#1a1916;font-size:26px;line-height:1;-webkit-text-stroke:0.5px #1a1916;}
 .cancellate-panel.open{transform:translateY(0);}
-.cancellate-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cancellate-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:2px solid #1a1916;flex-shrink:0;}
 .cancellate-title{font-size:20px;font-weight:700;color:var(--text-pri);flex:1;text-align:center;}
 .cancellate-close{width:34px;height:34px;border-radius:var(--radius);border:none;background:var(--dang-fill);color:#fff;font-size:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.cancellate-list{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:9px;align-content:start;}
+.cancellate-list{flex:1;overflow-y:auto;padding:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:auto;gap:9px;align-content:start;}
 @media(max-width:1100px){.cancellate-list{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:600px){.cancellate-list{grid-template-columns:1fr;}}
 .cancellate-card{background:var(--bg2);border-radius:var(--radius);padding:12px 14px;border:1px solid var(--border);}
@@ -331,7 +330,7 @@ input,select,textarea{font-size:16px !important;}
 .cancellate-card-tavolo{font-size:15px;font-weight:700;color:var(--text-pri);}
 .cancellate-card-time{font-size:12px;color:var(--text-mut);}
 .cancellate-card-items{font-size:14px;color:var(--text-sec);line-height:1.7;}
-.cancellate-empty{text-align:center;padding:40px 20px;color:var(--text-mut);font-size:15px;}
+.cancellate-empty{text-align:center;padding:40px 20px;color:#1a1916;font-size:15px;font-weight:500;grid-column:1/-1;}
 .cancellate-list .comanda-card{background:#ffffff;border-color:#1a1916;}
 
 /* ── PIN SCREEN ── */

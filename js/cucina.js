@@ -25,7 +25,7 @@ function playNotificationSound(){
 function renderCucina(silent=false){
 
   const el=document.getElementById('cucina-grid');
-  if(!comande.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-mut);font-size:15px">Nessuna comanda</div>';return;}
+  if(!comande.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#1a1916;font-size:15px;font-weight:500">Nessuna comanda</div>';return;}
 
   let hasNew=false;
   el.innerHTML=comande.map(c=>{

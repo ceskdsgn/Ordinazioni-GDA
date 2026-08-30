@@ -15,7 +15,7 @@ function renderDolci(){
     return piatti.some(p=>DOLCI_CATS.includes(p.cat));
   });
 
-  if(!comandeConDolci.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-mut);font-size:15px">Nessuna comanda dolci</div>';return;}
+  if(!comandeConDolci.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#1a1916;font-size:15px;font-weight:500">Nessuna comanda dolci</div>';return;}
 
   el.innerHTML=comandeConDolci.map(c=>{
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
