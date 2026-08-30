@@ -1,14 +1,12 @@
 async function loadCucina(){
   const{data,error}=await sb.from('comande').select('*').eq('stato','attivo').order('ts');
   if(error){setSyncState('error');return;}
-  comande=data||[];setSyncState('online');renderCucina();
+  comande=data||[];setSyncState('online');updateTabCounts();renderCucina();
 }
 
 function parsePiatti(c){return Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');}
 
 function renderCucina(){
-  const countEl=document.getElementById('cucina-tab-count');
-  if(countEl){countEl.textContent=comande.length;countEl.style.display=comande.length?'inline':'none';}
 
   const el=document.getElementById('cucina-grid');
   if(!comande.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-mut);font-size:15px">Nessuna comanda</div>';return;}

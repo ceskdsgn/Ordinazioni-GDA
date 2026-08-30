@@ -39,6 +39,7 @@ function subscribeRealtime(){
   sb.channel('all-changes')
     .on('postgres_changes',{event:'*',schema:'public',table:'comande'},async()=>{
       await loadCucina();
+      if(document.getElementById('screen-dolci').classList.contains('visible')) await loadDolci();
       if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
     })
     .subscribe(s=>{
@@ -49,6 +50,7 @@ function subscribeRealtime(){
   // polling ogni 5 secondi come fallback
   setInterval(async()=>{
     if(document.getElementById('screen-cucina').classList.contains('visible')) await loadCucina();
+    if(document.getElementById('screen-dolci').classList.contains('visible')) await loadDolci();
     if(document.getElementById('screen-tavoli').classList.contains('visible')) await loadTavoli();
   }, 5000);
 }
