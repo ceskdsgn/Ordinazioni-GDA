@@ -1,18 +1,35 @@
-async function loadCucina(){
+async function loadCucina(silent=false){
   const{data,error}=await sb.from('comande').select('*').eq('stato','attivo').order('ts');
   if(error){setSyncState('error');return;}
-  comande=data||[];setSyncState('online');updateTabCounts();renderCucina();
+  comande=data||[];setSyncState('online');updateTabCounts();renderCucina(silent);
 }
 
 function parsePiatti(c){return Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');}
 
-function renderCucina(){
+function playNotificationSound(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [[880,0,0.25],[1100,0.15,0.25],[1320,0.3,0.4]].forEach(([freq,start,dur])=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=freq;
+      gain.gain.setValueAtTime(1.0,ctx.currentTime+start);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+start+dur);
+      osc.start(ctx.currentTime+start);
+      osc.stop(ctx.currentTime+start+dur+0.05);
+    });
+  }catch(e){}
+}
+
+function renderCucina(silent=false){
 
   const el=document.getElementById('cucina-grid');
   if(!comande.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-mut);font-size:15px">Nessuna comanda</div>';return;}
 
+  let hasNew=false;
   el.innerHTML=comande.map(c=>{
-    const isNew=!cucinaSeenIds.has(c.id);if(isNew)cucinaSeenIds.add(c.id);
+    const isNew=!cucinaSeenIds.has(c.id);if(isNew){cucinaSeenIds.add(c.id);hasNew=true;}
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     const piatti=parsePiatti(c);
 
@@ -56,6 +73,7 @@ function renderCucina(){
       ${c.note?`<div class="comanda-note"><span class="comanda-note-label">Note</span> ${esc(c.note)}</div>`:''}
     </div>`;
   }).join('');
+  if(hasNew && !silent) playNotificationSound();
 }
 
 function chiudiModale(){document.getElementById('modal-cancella').classList.remove('open');}

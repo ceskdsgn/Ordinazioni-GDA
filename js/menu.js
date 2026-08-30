@@ -135,6 +135,3 @@ async function moveDish(i,dir){
   [menu[i],menu[j]]=[menu[j],menu[i]];
   renderDishList();await saveMenuOrder();await loadMenu();
 }
-
-init();
-</script>

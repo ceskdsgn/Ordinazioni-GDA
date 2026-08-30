@@ -30,8 +30,10 @@ function renderDolci(){
 
     return`<div class="comanda-card">
       <div class="comanda-head">
-        <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
-        <span class="comanda-time">${time}</span>
+        <div class="comanda-tavolo-wrap">
+          <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+          <span class="comanda-time">${time}</span>
+        </div>
         <button class="comanda-del-btn" onclick="cancellaDolci('${c.id}')" title="Cancella">✕</button>
       </div>
       <div class="cat-group"><div class="cat-bar cat-bar-4">D</div><div class="cat-righe">${righe}</div></div>

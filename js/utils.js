@@ -43,7 +43,7 @@ function showTab(tab){
   document.querySelector('.topbar').classList.toggle('dark-nav', tab==='cameriere');
   const m={cameriere:'sala',cucina:'cuci',dolci:'dolci',tavoli:'tavo',menu:'menu'};
   document.getElementById('tab-'+m[tab]).classList.add('active');
-  if(tab==='cucina') loadCucina();
+  if(tab==='cucina') loadCucina(true);
   if(tab==='dolci') loadDolci();
   if(tab==='tavoli') loadTavoli();
 }
