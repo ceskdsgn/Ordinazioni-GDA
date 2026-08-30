@@ -131,7 +131,7 @@ function addCustomPiatto(){
 function getWineUnitPrice(p,fmt){
   const bottPrice=Number(p.price);
   if(fmt==='Bottiglia') return bottPrice;
-  if(/^locale$/i.test(p.name.trim())) return 5;
+  if(/^locale/i.test(p.name.trim())) return 5;
   return bottPrice/5;
 }
 
@@ -190,9 +190,7 @@ function renderPiattiList(cat){
     }
     if(isWine){
       if(!window._wineFormat) window._wineFormat={};
-      const bottOnly=/piccolo|grande/i.test(p.name);
-      if(bottOnly) window._wineFormat[p.id]='Bottiglia';
-      else if(!window._wineFormat[p.id]) window._wineFormat[p.id]='Calice';
+      if(!window._wineFormat[p.id]) window._wineFormat[p.id]='Calice';
       const fmt=window._wineFormat[p.id];
       const displayPrice=getWineUnitPrice(p,fmt);
       return`<div class="cam-piatto-box">
@@ -201,8 +199,8 @@ function renderPiattiList(cat){
           <div class="cam-piatto-price" id="wine-price-${p.id}">€${displayPrice.toFixed(2)}</div>
         </div>
         <div class="wine-format-sel">
-          ${bottOnly?'':`<button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')">🥂 Calice</button>`}
-          <button class="wine-fmt-btn${(bottOnly||fmt==='Bottiglia')?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" ${bottOnly?'':` onclick="setWineFormat('${p.id}','Bottiglia')"`}>🍾 Bottiglia</button>
+          <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')">🥂 Calice</button>
+          <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" onclick="setWineFormat('${p.id}','Bottiglia')">🍾 Bottiglia</button>
         </div>
         <div class="cam-piatto-box-bottom">
           <div class="inline-qty" style="width:100%;">
