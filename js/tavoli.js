@@ -3,6 +3,9 @@ async function loadTavoli(){
   if(error){setSyncState('error');return;}
   setSyncState('online');renderTavoli(data||[]);
 }
+const TAVOLI_CAT_ORDER={'Coperti':0,'Bevande':1,'Bibite':1,'Vini':1,'Birre':1,'Antipasti':2,'Primi':3,'Primi di mare':3,'Primi di terra':3,'Secondi':4,'Secondi di mare':4,'Secondi di carne':4,'Contorni':5,'Dessert':6,'Bar':7};
+const TAVOLI_CAT_LABEL={'Coperti':'Coperti','Bevande':'Bevande','Bibite':'Bevande','Vini':'Bevande','Birre':'Bevande','Antipasti':'Antipasti','Primi':'Primi','Primi di mare':'Primi','Primi di terra':'Primi','Secondi':'Secondi','Secondi di mare':'Secondi','Secondi di carne':'Secondi','Contorni':'Contorni','Dessert':'Dessert','Bar':'Bar'};
+
 function renderTavoli(comandeAttive){
   const el=document.getElementById('tavoli-grid');
   if(!comandeAttive.length){el.innerHTML='<div class="tavolo-empty">Nessun tavolo attivo al momento</div>';return;}
@@ -13,14 +16,15 @@ function renderTavoli(comandeAttive){
     byTavolo[tv].ids.push(c.id);
     parsePiatti(c).forEach(p=>{
       const key=p.kg!=null?`${p.name}__${p.kg}`:p.name;
-      if(!byTavolo[tv].piatti[key]) byTavolo[tv].piatti[key]={name:p.name,qty:0,price:p.price,kg:p.kg!=null?p.kg:null};
+      if(!byTavolo[tv].piatti[key]) byTavolo[tv].piatti[key]={name:p.name,qty:0,price:p.price,kg:p.kg!=null?p.kg:null,cat:p.cat||''};
       byTavolo[tv].piatti[key].qty+=p.qty;
     });
     if(c.note) byTavolo[tv].note.push(c.note);
   });
 
-  // salva i dati in memoria per stampa e cancellazione
   window._tavoliData={};
+  window._comandeMap={};
+  comandeAttive.forEach(c=>{ window._comandeMap[c.id]=c; });
   const sorted=Object.values(byTavolo).sort((a,b)=>Number(a.tavolo)-Number(b.tavolo));
   sorted.forEach(tv=>{ window._tavoliData[tv.tavolo]=tv; });
 
@@ -28,27 +32,136 @@ function renderTavoli(comandeAttive){
     const righe=Object.values(tv.piatti);
     const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
     const hasCustom=righe.some(p=>Number(p.price)===0);
-    const totaleStr=hasCustom?`€${totale.toFixed(2)} + ??`:`€${totale.toFixed(2)}`;
+    const totaleStr=hasCustom?`€${totale.toFixed(2)}+`:  `€${totale.toFixed(2)}`;
     const tvKey=esc(tv.tavolo);
-    return`<div class="tavolo-card">
-      <div class="tavolo-card-header">
-        <span class="tavolo-card-num">Tavolo ${tv.tavolo}</span>
-        <span class="tavolo-card-total">${totaleStr}</span>
-      </div>
-      <div class="tavolo-card-body">
-        ${righe.map(p=>`<div class="tavolo-piatto-line">
-          <span class="tavolo-piatto-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:12px;font-weight:600;color:var(--text-pri)"> ${Number(p.kg).toFixed(2)} kg</span>`:''}</span>
-          <span class="tavolo-piatto-qty">${p.qty}×</span>
-          <span class="tavolo-piatto-price">${Number(p.price)===0?'??':'€'+(Number(p.price)*p.qty).toFixed(2)}</span>
-        </div>`).join('')}
-        ${tv.note.length?`<div style="font-size:13px;color:var(--text-sec);margin-top:8px">Note: ${tv.note.map(n=>esc(n)).join(' — ')}</div>`:''}
-        <div class="tavolo-card-actions">
-          <button class="tavolo-del-btn" onclick="cancellaTavolo('${tvKey}')" title="Cancella tavolo">✕ Cancella</button>
-          <button class="tavolo-print-btn" onclick="stampaConto('${tvKey}')" title="Stampa conto">🖨 Stampa conto</button>
-        </div>
+    return`<button class="tav-btn" onclick="openTavolo('${tvKey}')">
+      <span class="tav-btn-num">Tavolo ${tv.tavolo}</span>
+      <span class="tav-btn-total">${totaleStr}</span>
+    </button>`;
+  }).join('');
+}
+
+function openTavolo(tavoloKey){
+  document.getElementById('tav-level-1').style.display='none';
+  document.getElementById('tav-level-2').classList.add('tav-open');
+  document.getElementById('tav-detail-title').textContent='Tavolo '+tavoloKey;
+  const tv=window._tavoliData&&window._tavoliData[tavoloKey];
+  if(!tv){document.getElementById('tav-detail-body').innerHTML='<div class="tavolo-empty">Dati non disponibili</div>';return;}
+  document.getElementById('tav-detail-body').innerHTML=buildTavoloCard(tv);
+  initTavoliSwipe();
+}
+
+function backToTavoliGrid(){
+  document.getElementById('tav-level-2').classList.remove('tav-open');
+  document.getElementById('tav-level-1').style.display='';
+}
+
+function buildTavoloCard(tv){
+  const tvKey=esc(tv.tavolo);
+  const righe=Object.values(tv.piatti).sort((a,b)=>{
+    const oa=TAVOLI_CAT_ORDER[a.cat]!==undefined?TAVOLI_CAT_ORDER[a.cat]:99;
+    const ob=TAVOLI_CAT_ORDER[b.cat]!==undefined?TAVOLI_CAT_ORDER[b.cat]:99;
+    return oa-ob;
+  });
+  const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+  const hasCustom=righe.some(p=>Number(p.price)===0);
+  const totaleStr=hasCustom?`€${totale.toFixed(2)} + ??`:`€${totale.toFixed(2)}`;
+
+  let lastLabel=null;
+  const righeHtml=righe.map((p)=>{
+    const label=TAVOLI_CAT_LABEL[p.cat]||p.cat||'';
+    const keyEnc=encodeURIComponent(p.kg!=null?`${p.name}__${p.kg}`:p.name);
+    const header=label!==lastLabel?`<div class="tavolo-cat-header">${label}</div>`:'';
+    lastLabel=label;
+    const priceStr=Number(p.price)===0?'??':'€'+(Number(p.price)*p.qty).toFixed(2);
+    return`${header}<div class="piatto-swipe-wrap" data-tavolo="${tvKey}" data-key="${keyEnc}">
+      <div class="piatto-swipe-del">🗑</div>
+      <div class="piatto-swipe-inner">
+        <span class="tavolo-piatto-qty">${p.qty}×</span>
+        <span class="tavolo-piatto-name">${esc(p.name)}${p.kg!=null?`<span style="font-size:12px;font-weight:600"> ${Number(p.kg).toFixed(2)} kg</span>`:''}</span>
+        <span class="tavolo-piatto-price">${priceStr}</span>
       </div>
     </div>`;
   }).join('');
+
+  return`<div class="tavolo-card">
+    <div class="tavolo-card-header">
+      <span class="tavolo-card-num">Tavolo ${tv.tavolo}</span>
+      <span class="tavolo-card-total" id="tavolo-total-${tvKey}">${totaleStr}</span>
+    </div>
+    <div class="tavolo-card-body">
+      ${righeHtml}
+      ${tv.note.length?`<div style="font-size:13px;color:var(--text-sec);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Note: ${tv.note.map(n=>esc(n)).join(' — ')}</div>`:''}
+      <div class="tavolo-card-actions">
+        <button class="tavolo-del-btn" onclick="cancellaTavolo('${tvKey}')" title="Cancella tavolo">✕ Cancella</button>
+        <button class="tavolo-print-btn" onclick="stampaConto('${tvKey}')" title="Stampa conto">🖨 Stampa conto</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function initTavoliSwipe(){
+  document.querySelectorAll('.piatto-swipe-wrap').forEach(wrap=>{
+    let startX=0,curX=0,swiping=false;
+    const inner=wrap.querySelector('.piatto-swipe-inner');
+    wrap.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;curX=startX;swiping=true;inner.style.transition='none';},{passive:true});
+    wrap.addEventListener('touchmove',e=>{
+      if(!swiping)return;
+      curX=e.touches[0].clientX;
+      const dx=Math.min(0,curX-startX);
+      inner.style.transform=`translateX(${dx}px)`;
+    },{passive:true});
+    wrap.addEventListener('touchend',()=>{
+      if(!swiping)return;
+      swiping=false;
+      inner.style.transition='transform .2s';
+      if(curX-startX<-80){
+        inner.style.transform='translateX(-100%)';
+        setTimeout(()=>deletePiattoVisuale(wrap),200);
+      } else {
+        inner.style.transform='translateX(0)';
+      }
+    });
+  });
+}
+
+async function deletePiattoVisuale(wrapEl){
+  const tavolo=decodeURIComponent(wrapEl.dataset.tavolo);
+  const key=decodeURIComponent(wrapEl.dataset.key);
+
+  setSyncState('syncing');
+  if(window._tavoliData&&window._tavoliData[tavolo]&&window._comandeMap){
+    for(const id of window._tavoliData[tavolo].ids){
+      const comanda=window._comandeMap[id];
+      if(!comanda)continue;
+      const piatti=parsePiatti(comanda);
+      const nuovi=piatti.filter(p=>(p.kg!=null?`${p.name}__${p.kg}`:p.name)!==key);
+      if(nuovi.length===piatti.length)continue;
+      if(nuovi.length===0){
+        const{error}=await sb.from('comande').delete().eq('id',id);
+        if(error){setSyncState('error');showToast('❌ Errore eliminazione');return;}
+      } else {
+        const{error}=await sb.from('comande').update({piatti:JSON.stringify(nuovi)}).eq('id',id);
+        if(error){setSyncState('error');showToast('❌ Errore eliminazione');return;}
+      }
+      window._comandeMap[id]={...comanda,piatti:nuovi};
+    }
+    delete window._tavoliData[tavolo].piatti[key];
+    const righe=Object.values(window._tavoliData[tavolo].piatti);
+    const totale=righe.reduce((s,p)=>s+Number(p.price)*p.qty,0);
+    const hasCustom=righe.some(p=>Number(p.price)===0);
+    const totalEl=document.getElementById('tavolo-total-'+tavolo);
+    if(totalEl)totalEl.textContent=hasCustom?`€${totale.toFixed(2)} + ??`:`€${totale.toFixed(2)}`;
+  }
+  setSyncState('online');
+  showToast('Voce rimossa');
+
+  const prev=wrapEl.previousElementSibling;
+  wrapEl.remove();
+  if(prev&&prev.classList.contains('tavolo-cat-header')){
+    const next=prev.nextElementSibling;
+    if(!next||!next.classList.contains('piatto-swipe-wrap'))prev.remove();
+  }
 }
 
 function stampaConto(tavolo){
@@ -126,6 +239,7 @@ async function cancellaTavolo(tavolo){
   if(error){setSyncState('error');showToast('❌ Errore cancellazione');return;}
   setSyncState('online');
   showToast('Tavolo cancellato');
+  backToTavoliGrid();
   await loadTavoli();
   if(document.getElementById('screen-cucina').classList.contains('visible')) await loadCucina();
 }

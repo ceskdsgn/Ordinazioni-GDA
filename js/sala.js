@@ -292,6 +292,7 @@ async function sendComanda(){
     const price=p?(p._ppk>0&&kg!=null?p._bp*(qty||1)+p._ppk*kg:Number(p.price)):0;
     return{name:p?p.name:id,qty,price,cat:p?p.cat:'',kg:kg!=null?kg:undefined};
   });
+  if(copertiCount>0) piatti.unshift({id:'_coperti',name:'Coperti',qty:copertiCount,price:3,cat:'Coperti'});
   const c={id:'c'+Date.now(),tavolo:tv,piatti,note,stato:'attivo',ts:Date.now()};
   setSyncState('syncing');
   const{error}=await sb.from('comande').insert(c);
@@ -303,6 +304,8 @@ async function sendComanda(){
   menu.forEach(p=>delete p._dynPrice);
   document.getElementById('order-note').value='';
   document.getElementById('sel-tavolo').value='';
+  copertiCount=0;
+  document.getElementById('coperti-wrap').classList.add('hidden');
   closeCart();updateFab();renderCart();renderCatGrid();
   // torna alla schermata iniziale (griglia categorie)
   document.getElementById('cam-level-1').classList.remove('hidden');

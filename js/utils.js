@@ -2,7 +2,23 @@ function getTavolo(){
   return document.getElementById('sel-tavolo').value;
 }
 
-function onTavoloSelect(){ updateFab(); }
+function onTavoloSelect(){
+  const tv=getTavolo();
+  const wrap=document.getElementById('coperti-wrap');
+  if(tv){
+    copertiCount=2;
+    document.getElementById('coperti-val').textContent=copertiCount;
+    wrap.classList.remove('hidden');
+  } else {
+    wrap.classList.add('hidden');
+  }
+  updateFab();
+}
+
+function changeCoperti(delta){
+  copertiCount=Math.max(1,copertiCount+delta);
+  document.getElementById('coperti-val').textContent=copertiCount;
+}
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function getCategories(){return[...new Set(menu.map(d=>d.cat))];}

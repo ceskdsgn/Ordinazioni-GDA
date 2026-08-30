@@ -3,6 +3,7 @@ const SUPA_KEY='sb_publishable_Kmndi3DKhim7hNM1V8maEQ_b17Hl2YA';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
 let menu=[], order={}, comande=[], cucinaSeenIds=new Set();
+let copertiCount=2;
 const NUM_TAVOLI=60;
 const CAT_CONFIG=[
   {name:'Antipasti',emoji:'🥗'},{name:'Primi',emoji:'🍝',sub:[{name:'Primi di mare',emoji:'🦞'},{name:'Primi di terra',emoji:'🍝'}]},

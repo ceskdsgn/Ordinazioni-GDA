@@ -47,6 +47,12 @@
     <select id="sel-tavolo" onchange="onTavoloSelect()">
       <option value="">— Seleziona tavolo —</option>
     </select>
+    <div class="coperti-wrap hidden" id="coperti-wrap">
+      <button class="coperti-btn" onclick="changeCoperti(-1)">−</button>
+      <span class="coperti-val" id="coperti-val">2</span>
+      <button class="coperti-btn" onclick="changeCoperti(1)">+</button>
+      <span class="coperti-label">cop.</span>
+    </div>
   </div>
   <div class="cam-level" id="cam-level-1">
     <div class="cat-grid" id="cat-grid"></div>
@@ -133,10 +139,17 @@
 </div>
 <!-- ══════════════ TAVOLI ══════════════ -->
 <div id="screen-tavoli" class="screen">
-  <div class="tavoli-wrap">
-    <div class="tavoli-grid" id="tavoli-grid">
+  <div id="tav-level-1">
+    <div class="tav-btn-grid" id="tavoli-grid">
       <div class="tavolo-empty">Nessun tavolo attivo</div>
     </div>
+  </div>
+  <div id="tav-level-2">
+    <div class="tav-detail-bar">
+      <button class="back-btn" onclick="backToTavoliGrid()">←</button>
+      <span class="tav-detail-title" id="tav-detail-title"></span>
+    </div>
+    <div class="tav-detail-body" id="tav-detail-body"></div>
   </div>
 </div>
 

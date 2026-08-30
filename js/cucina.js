@@ -16,7 +16,7 @@ function renderCucina(){
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     const piatti=parsePiatti(c);
 
-    const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar'];
+    const SOLO_TAVOLI=['Dessert','Bevande','Bibite','Vini','Birre','Bar','Coperti'];
     const catOrder=CAT_CONFIG.map(x=>x.name);
     const byCat={};
     piatti.forEach(p=>{
@@ -45,9 +45,11 @@ function renderCucina(){
 
     return`<div class="comanda-card">
       <div class="comanda-head">
-        <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+        <div class="comanda-tavolo-wrap">
+          <span class="comanda-tavolo">Tavolo ${c.tavolo}</span>
+          <span class="comanda-time">${time}</span>
+        </div>
         ${isNew?'<span class="new-badge">NUOVO</span>':''}
-        <span class="comanda-time">${time}</span>
         <button class="comanda-del-btn" onclick="cancellaComanda('${c.id}')" title="Cancella">✕</button>
       </div>
       ${catHtml}
@@ -59,19 +61,10 @@ function renderCucina(){
 function chiudiModale(){document.getElementById('modal-cancella').classList.remove('open');}
 
 async function cancellaComanda(id){
-  const modal=document.getElementById('modal-cancella');
-  modal.classList.add('open');
-  const oldBtn=document.getElementById('modal-confirm-btn');
-  const newBtn=oldBtn.cloneNode(true);
-  oldBtn.replaceWith(newBtn);
-  newBtn.addEventListener('click',async()=>{
-    chiudiModale();
-    setSyncState('syncing');
-    // aggiorna solo lo stato: rimane visibile in tavoli ma sparisce dalla cucina
-    const{error}=await sb.from('comande').update({stato:'eliminato_cucina'}).eq('id',id);
-    if(error){setSyncState('error');showToast('❌ Errore cancellazione');return;}
-    setSyncState('online');showToast('Comanda cancellata');
-    await loadCucina();
-  });
+  setSyncState('syncing');
+  const{error}=await sb.from('comande').update({stato:'eliminato_cucina'}).eq('id',id);
+  if(error){setSyncState('error');showToast('❌ Errore cancellazione');return;}
+  setSyncState('online');showToast('Comanda cancellata');
+  await loadCucina();
 }
 

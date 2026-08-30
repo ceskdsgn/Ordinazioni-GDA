@@ -96,6 +96,11 @@ input,select,textarea{font-size:16px !important;}
 #screen-cameriere{height:calc(100vh - 48px - env(safe-area-inset-top,0px));flex-direction:column;overflow:hidden;background:#1a1916;}
 .cam-tavolo-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .cam-tavolo-bar select{flex:1;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--border-s);background:var(--bg1);color:var(--text-pri);font-size:18px;font-weight:600;-webkit-appearance:none;appearance:none;}
+.coperti-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:10px;}
+.coperti-wrap.hidden{display:none;}
+.coperti-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid #4a4842;background:transparent;color:#f0ede8;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.coperti-val{min-width:22px;text-align:center;font-size:17px;font-weight:700;color:#f0ede8;}
+.coperti-label{font-size:12px;color:#9e9b96;white-space:nowrap;}
 .cam-level{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .cam-level.hidden{display:none;}
 /* griglia categorie */
@@ -188,11 +193,12 @@ input,select,textarea{font-size:16px !important;}
 @media(max-width:600px){.cucina-kanban{grid-template-columns:1fr;}}
 .comanda-card{background:var(--bg2);border:2px solid #1a1916;border-radius:9px;overflow:hidden;}
 .comanda-head{display:flex;align-items:center;gap:5px;padding:7px 11px;border-bottom:2px solid #1a1916;background:var(--bg1);}
-.comanda-tavolo{font-size:23px;font-weight:700;flex:1;}
+.comanda-tavolo-wrap{flex:1;display:flex;align-items:baseline;gap:8px;}
+.comanda-tavolo{font-size:23px;font-weight:700;}
 .comanda-time{font-size:15px;color:var(--text-mut);}
-.new-badge{background:var(--dang-fill);color:var(--dang-on);font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em;}
-.comanda-del-btn{width:22px;height:22px;border:1px solid var(--dang-bord);border-radius:var(--radius);background:transparent;color:var(--dang-text);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.comanda-del-btn:hover{background:var(--dang-bg);}
+.new-badge{background:#16a34a;color:#fff;font-size:12px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.04em;}
+.comanda-del-btn{width:36px;height:36px;border:none;border-radius:var(--radius);background:var(--dang-fill);color:#fff;font-size:18px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;}
+.comanda-del-btn:active{background:var(--dang-bg);}
 .cat-section-header{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px 2px;border-bottom:1px solid rgba(0,0,0,.08);}
 .cat-color-0{background:#fff0e0;color:#c45000;}
 .cat-color-1{background:#e6f4ea;color:#2e7d32;}
@@ -218,14 +224,24 @@ input,select,textarea{font-size:16px !important;}
 .piatto-riga-name.done{text-decoration:line-through;color:var(--text-mut);font-weight:400;}
 .piatto-pronto-btn{padding:3px 7px;border-radius:var(--radius);border:1px solid var(--succ-bord);background:transparent;color:var(--succ-text);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;}
 .piatto-pronto-btn:hover{background:var(--succ-bg);}
-.comanda-note{font-size:15px;color:#1a1916;font-weight:700;padding:8px 14px;border-top:2px solid #1a1916;background:var(--bg1);}
+.comanda-note{font-size:20px;color:#1a1916;font-weight:700;padding:8px 14px;border-top:2px solid #1a1916;background:var(--bg1);}
 .comanda-note-label{color:#dc2626;font-weight:700;}
 .kanban-empty{padding:22px;text-align:center;color:var(--text-mut);font-size:12px;}
 
 /* ════ TAVOLI ════ */
 #screen-tavoli{min-height:calc(100vh - 48px);}
 .tavoli-wrap{flex:1;overflow-y:auto;padding:14px;}
-.tavoli-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+#tav-level-1{flex:1;overflow-y:auto;padding:14px;}
+#tav-level-2{display:none;flex-direction:column;flex:1;overflow:hidden;}
+#tav-level-2.tav-open{display:flex;}
+.tav-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tav-detail-body{flex:1;overflow-y:auto;padding:14px;}
+.tav-btn{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s,transform .1s;width:100%;}
+.tav-btn:active{background:var(--bg1);transform:scale(.97);}
+.tav-btn-num{font-size:18px;font-weight:700;color:var(--text-pri);}
+.tav-btn-total{font-size:14px;font-weight:600;color:var(--acc-text);background:var(--acc-bg);border-radius:20px;padding:2px 10px;}
+.tav-detail-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.tav-detail-title{font-size:17px;font-weight:700;color:var(--text-pri);}
 .tavolo-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
 .tavolo-card-header{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--acc-bg);border-bottom:1px solid var(--acc-bord);}
 .tavolo-card-num{font-size:17px;font-weight:700;color:var(--acc-text);flex:1;}
@@ -236,11 +252,16 @@ input,select,textarea{font-size:16px !important;}
 .tavolo-del-btn{flex:1;padding:9px 12px;border:1px solid var(--dang-bord);border-radius:var(--radius);background:transparent;color:var(--dang-text);font-size:14px;font-weight:600;cursor:pointer;text-align:center;}
 .tavolo-del-btn:hover{background:var(--dang-bg);}
 .tavolo-card-body{padding:10px 14px;}
-.tavolo-piatto-line{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:15px;}
-.tavolo-piatto-line:last-child{border-bottom:none;}
-.tavolo-piatto-name{flex:1;color:var(--text-pri);font-weight:500;}
-.tavolo-piatto-qty{font-weight:700;color:var(--text-sec);margin:0 8px;}
-.tavolo-piatto-price{color:var(--text-sec);min-width:52px;text-align:right;}
+.piatto-swipe-wrap{position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.piatto-swipe-wrap:last-child,
+.piatto-swipe-wrap:has(+.tavolo-cat-header){border-bottom:none;}
+.piatto-swipe-del{position:absolute;right:0;top:0;bottom:0;width:64px;background:var(--dang-fill);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;z-index:0;}
+.piatto-swipe-inner{display:flex;align-items:center;gap:8px;padding:8px 0;background:var(--bg2);position:relative;z-index:1;transition:transform .2s;}
+.tavolo-piatto-qty{font-weight:700;color:var(--text-sec);min-width:28px;flex-shrink:0;font-size:15px;}
+.tavolo-piatto-name{flex:1;color:var(--text-pri);font-weight:500;font-size:15px;}
+.tavolo-piatto-price{color:var(--text-sec);min-width:52px;text-align:right;font-size:15px;flex-shrink:0;}
+.tavolo-cat-header{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a1916;padding:14px 0 5px;margin-top:10px;border-top:1.5px solid #1a1916;}
+.tavolo-card-body>.tavolo-cat-header:first-child{border-top:none;margin-top:0;}
 .tavolo-empty{text-align:center;padding:40px 20px;color:var(--text-mut);font-size:14px;}
 
 /* ════ MENU MANAGER ════ */
