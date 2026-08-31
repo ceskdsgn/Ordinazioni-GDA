@@ -6,6 +6,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#ffffff">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="apple-mobile-web-app-title" content="Prenotazioni">
   <title>Prenotazioni</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -152,8 +155,10 @@
         <div class="field-row">
           <div class="field-group half">
             <label class="field-lbl" for="formDate">Data</label>
-            <input type="date" class="field-input" id="formDate" required>
-            <span class="date-day-label" id="formDateDay"></span>
+            <div class="date-picker-wrap">
+              <input type="date" class="field-input date-input-hidden" id="formDate" required>
+              <div class="date-display" id="formDateDisplay">Seleziona data</div>
+            </div>
           </div>
           <div class="field-group half">
             <label class="field-lbl">Servizio</label>
