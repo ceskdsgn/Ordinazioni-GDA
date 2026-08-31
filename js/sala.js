@@ -12,6 +12,8 @@ async function loadSalaLevel0(){
   const sel=document.getElementById('sel-tavolo');
   sel.value='';sel.disabled=false;
   document.getElementById('cam-tavolo-bar').style.display='';
+  document.getElementById('cam-tavolo-bar').classList.remove('cam-tavolo-bar--selected');
+  document.getElementById('sel-tavolo-label').style.display='none';
   document.getElementById('cam-tavolo-back').style.display='none';
   document.getElementById('coperti-wrap').classList.add('hidden');
   copertiCount=0;
@@ -33,6 +35,11 @@ function openSalaTable(tvNum){
 
 function showSalaLevel1(){
   document.getElementById('cam-tavolo-back').style.display='';
+  document.getElementById('cam-tavolo-bar').classList.add('cam-tavolo-bar--selected');
+  const tv=document.getElementById('sel-tavolo').value;
+  const lbl=document.getElementById('sel-tavolo-label');
+  lbl.textContent=tv?'Tavolo '+tv:'';
+  lbl.style.display=tv?'':'none';
   document.getElementById('cam-level-0').classList.add('hidden');
   document.getElementById('cam-level-1').classList.remove('hidden');
   document.getElementById('cam-level-2').classList.add('hidden');

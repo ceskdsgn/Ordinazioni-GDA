@@ -77,11 +77,14 @@
     <select id="sel-tavolo" onchange="onTavoloSelect()">
       <option value="">— Seleziona tavolo —</option>
     </select>
+    <span id="sel-tavolo-label" class="sel-tavolo-label" style="display:none"></span>
     <div class="coperti-wrap hidden" id="coperti-wrap">
       <button class="coperti-btn" onclick="changeCoperti(-1)">−</button>
-      <span class="coperti-val" id="coperti-val">2</span>
+      <div class="coperti-mid">
+        <span class="coperti-val" id="coperti-val">2</span>
+        <span class="coperti-label">cop.</span>
+      </div>
       <button class="coperti-btn" onclick="changeCoperti(1)">+</button>
-      <span class="coperti-label">cop.</span>
     </div>
   </div>
   <div class="cam-level" id="cam-level-0">
