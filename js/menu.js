@@ -25,11 +25,14 @@ function renderDishList(){
     const items=byCat[cat];
     if(!items.length) return '';
     const isFish=FISH_CATS.includes(cat);
+    const isWine=cat==='Vini';
     const rows=items.map(d=>{
       const enabled=d.enabled!==false;
       const ppk=Number(d.price_per_kg||0);
       const bp=Number(d.base_price||d.price||0);
-      const priceLabel=ppk>0?`base €${bp.toFixed(2)} + €${ppk.toFixed(2)}/kg`:`€${Number(d.price).toFixed(2)}`;
+      const priceLabel=ppk>0?`base €${bp.toFixed(2)} + €${ppk.toFixed(2)}/kg`
+        :isWine?`bott. €${Number(d.price).toFixed(2)} · cal. €${d.calice_price!=null?Number(d.calice_price).toFixed(2):'auto'}`
+        :`€${Number(d.price).toFixed(2)}`;
       return`
       <div class="dish-list-item${enabled?'':' disabled-dish'}" id="dish-item-${d.id}">
         <div class="dish-info">
@@ -55,6 +58,15 @@ function renderDishList(){
           <span style="flex:1;text-align:center">€/kg</span>
         </div>
         <div style="font-size:12px;color:var(--text-sec);padding:2px 2px 0">Prezzo = base fissa + (kg × €/kg)</div>
+        `:isWine?`
+        <div class="dish-edit-row">
+          <input class="form-input form-input-sm" id="edit-price-${d.id}" type="number" min="0" step="0.5" value="${Number(d.price).toFixed(2)}" placeholder="€ bottiglia" />
+          <input class="form-input form-input-sm" id="edit-calice-${d.id}" type="number" min="0" step="0.5" value="${d.calice_price!=null?Number(d.calice_price).toFixed(2):''}" placeholder="€ calice" />
+        </div>
+        <div style="display:flex;gap:8px;font-size:11px;color:var(--text-mut);padding:0 2px">
+          <span style="flex:1;text-align:center">Bottiglia</span>
+          <span style="flex:1;text-align:center">Calice</span>
+        </div>
         `:`
         <div class="dish-edit-row">
           <input class="form-input form-input-sm" id="edit-price-${d.id}" type="number" min="0" step="0.5" value="${Number(d.price).toFixed(2)}" placeholder="€" />
@@ -88,11 +100,18 @@ async function saveDish(id){
   const cat=document.getElementById('edit-cat-'+id).value;
   if(!name||!cat){showToast('❌ Dati non validi');return;}
   const isFish=FISH_CATS.includes(cat);
+  const isWine=cat==='Vini';
   let update={name,cat};
   if(isFish){
     const base_price=parseFloat(document.getElementById('edit-baseprice-'+id).value)||0;
     const price_per_kg=parseFloat(document.getElementById('edit-ppk-'+id).value)||0;
     update={...update,base_price,price_per_kg,price:base_price};
+  } else if(isWine){
+    const price=parseFloat(document.getElementById('edit-price-'+id).value);
+    if(isNaN(price)||price<0){showToast('❌ Prezzo non valido');return;}
+    const caliceRaw=document.getElementById('edit-calice-'+id).value.trim();
+    const calice_price=caliceRaw!==''?parseFloat(caliceRaw):null;
+    update={...update,price,calice_price,base_price:0,price_per_kg:0};
   } else {
     const price=parseFloat(document.getElementById('edit-price-'+id).value);
     if(isNaN(price)||price<0){showToast('❌ Prezzo non valido');return;}

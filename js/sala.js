@@ -184,6 +184,7 @@ function addCustomPiatto(){
 function getWineUnitPrice(p,fmt){
   const bottPrice=Number(p.price);
   if(fmt==='Bottiglia') return bottPrice;
+  if(p.calice_price!=null&&Number(p.calice_price)>0) return Number(p.calice_price);
   if(/^locale/i.test(p.name.trim())) return 5;
   return bottPrice/5;
 }
