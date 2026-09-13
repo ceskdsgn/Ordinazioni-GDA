@@ -69,6 +69,7 @@ function showSalaLevel1(){
   const lbl=document.getElementById('sel-tavolo-label');
   lbl.textContent=tv?'Tavolo '+tv:'';
   lbl.style.display=tv?'':'none';
+  renderCatGrid();
   document.getElementById('cam-level-0').classList.add('hidden');
   document.getElementById('cam-level-1').classList.remove('hidden');
   document.getElementById('cam-level-2').classList.add('hidden');
@@ -345,7 +346,7 @@ function updateFab(){
   const total=Object.values(order).reduce((a,b)=>a+b,0);
   const fab=document.getElementById('cart-fab');
   const tv=getTavolo();
-  if(tv){fab.classList.remove('hidden');document.getElementById('cart-count').textContent=total;fab.classList.toggle('cart-count-zero',total===0);}
+  if(tv&&total>0){fab.classList.remove('hidden');document.getElementById('cart-count').textContent=total;}
   else fab.classList.add('hidden');
   document.getElementById('send-btn').disabled=total===0||!tv;
 }
