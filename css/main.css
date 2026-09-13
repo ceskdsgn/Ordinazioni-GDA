@@ -114,8 +114,10 @@ input,select,textarea{font-size:16px !important;}
 .sala-active-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow-y:auto;flex:1;align-content:start;}
 .sala-tav-btn{background:#222220;border:1px solid #38362f;border-radius:16px;padding:20px 12px;color:#f0ede8;cursor:pointer;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;-webkit-tap-highlight-color:transparent;}
 .sala-tav-btn:active{transform:scale(.97);}
+.sala-tav-row{display:flex;align-items:baseline;gap:5px;}
+.sala-tav-label{font-size:13px;font-weight:400;color:#9e9b96;}
 .sala-tav-num{font-size:32px;font-weight:700;line-height:1;}
-.sala-tav-cop{font-size:13px;font-weight:500;color:#6b6860;}
+.sala-tav-cop{font-size:13px;font-weight:500;color:#9e9b96;}
 .sala-sel-new-btn{flex-shrink:0;background:#1a1916;color:#f0ede8;border:none;border-radius:12px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;width:100%;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));-webkit-tap-highlight-color:transparent;}
 .sala-tav-empty{grid-column:1/-1;text-align:center;color:#1a1916;font-weight:500;font-size:15px;padding:40px 0;}
 /* griglia categorie */

@@ -15,7 +15,7 @@ async function loadSalaLevel0(){
     grid.innerHTML=activeTavoli.map(tv=>{
       const cop=copertiMap[tv]||0;
       const copLabel=cop>0?`<span class="sala-tav-cop">${cop} coperti</span>`:'';
-      return`<button class="sala-tav-btn" onclick="openSalaTable('${tv}')"><span class="sala-tav-num">${tv}</span>${copLabel}</button>`;
+      return`<button class="sala-tav-btn" onclick="openSalaTable('${tv}')"><div class="sala-tav-row"><span class="sala-tav-label">Tav.</span><span class="sala-tav-num">${tv}</span></div>${copLabel}</button>`;
     }).join('');
   } else {
     grid.innerHTML='<div class="sala-tav-empty">Nessun tavolo attivo</div>';
