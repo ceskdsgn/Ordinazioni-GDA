@@ -9,7 +9,9 @@ async function loadSalaLevel0(){
   } else {
     grid.innerHTML='<div class="sala-tav-empty">Nessun tavolo attivo</div>';
   }
+  const activeSet=new Set(activeTavoli.map(String));
   const sel=document.getElementById('sel-tavolo');
+  sel.querySelectorAll('option').forEach(o=>{o.hidden=o.value!==''&&activeSet.has(o.value);});
   sel.value='';sel.disabled=false;
   document.getElementById('cam-tavolo-bar').style.display='';
   document.getElementById('cam-tavolo-bar').classList.remove('cam-tavolo-bar--selected');
