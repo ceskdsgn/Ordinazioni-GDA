@@ -42,6 +42,11 @@ async function loadSalaLevel0(){
 
 function openSalaTable(tvNum){
   const sel=document.getElementById('sel-tavolo');
+  if(!sel.querySelector(`option[value="${tvNum}"]`)){
+    const opt=document.createElement('option');
+    opt.value=tvNum;opt.textContent='Tavolo '+tvNum;
+    sel.appendChild(opt);
+  }
   sel.value=tvNum;
   sel.disabled=true;
   document.getElementById('cam-tavolo-back').style.display='';
