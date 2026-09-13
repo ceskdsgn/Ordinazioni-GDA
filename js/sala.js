@@ -66,6 +66,7 @@ function showSalaLevel1(){
   document.getElementById('cam-level-1').classList.remove('hidden');
   document.getElementById('cam-level-2').classList.add('hidden');
   document.getElementById('cam-level-3').classList.add('hidden');
+  refreshCatCounts();
   updateFab();
 }
 
