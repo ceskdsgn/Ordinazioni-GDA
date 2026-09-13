@@ -1,11 +1,22 @@
 async function loadSalaLevel0(){
-  const{data}=await sb.from('comande').select('tavolo').eq('stato','attivo');
-  const activeTavoli=[...new Set((data||[]).map(c=>c.tavolo))].sort((a,b)=>Number(a)-Number(b));
+  const{data}=await sb.from('comande').select('tavolo,piatti').eq('stato','attivo');
+  const rows=data||[];
+  const activeTavoli=[...new Set(rows.map(c=>c.tavolo))].sort((a,b)=>Number(a)-Number(b));
+  // calcola coperti per tavolo
+  const copertiMap={};
+  rows.forEach(c=>{
+    const tv=c.tavolo;
+    const piatti=parsePiatti(c);
+    const cop=piatti.filter(p=>p.cat==='Coperti').reduce((s,p)=>s+p.qty,0);
+    copertiMap[tv]=(copertiMap[tv]||0)+cop;
+  });
   const grid=document.getElementById('sala-active-grid');
   if(activeTavoli.length){
-    grid.innerHTML=activeTavoli.map(tv=>
-      `<button class="sala-tav-btn" onclick="openSalaTable('${tv}')">Tavolo ${tv}</button>`
-    ).join('');
+    grid.innerHTML=activeTavoli.map(tv=>{
+      const cop=copertiMap[tv]||0;
+      const copLabel=cop>0?`<span class="sala-tav-cop">${cop} cop.</span>`:'';
+      return`<button class="sala-tav-btn" onclick="openSalaTable('${tv}')">Tavolo ${tv}${copLabel}</button>`;
+    }).join('');
   } else {
     grid.innerHTML='<div class="sala-tav-empty">Nessun tavolo attivo</div>';
   }
