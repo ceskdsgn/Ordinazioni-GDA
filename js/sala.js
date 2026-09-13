@@ -27,6 +27,11 @@ async function loadSalaLevel0(){
       .filter(i=>!activeSet.has(String(i)))
       .map(i=>`<option value="${i}">Tavolo ${i}</option>`)
       .join('');
+  // azzera ordine in corso (non inviato)
+  order={};
+  if(window._customPiatti) window._customPiatti={};
+  if(window._kgMap) window._kgMap={};
+  if(window._wineFormat) window._wineFormat={};
   sel.value='';sel.disabled=false;
   document.getElementById('cam-tavolo-bar').style.display='';
   document.getElementById('cam-tavolo-bar').classList.remove('cam-tavolo-bar--selected');
@@ -34,10 +39,12 @@ async function loadSalaLevel0(){
   document.getElementById('cam-tavolo-back').style.display='none';
   document.getElementById('coperti-wrap').classList.add('hidden');
   copertiCount=0;
+  closeCart();
   document.getElementById('cam-level-0').classList.remove('hidden');
   document.getElementById('cam-level-1').classList.add('hidden');
   document.getElementById('cam-level-2').classList.add('hidden');
   document.getElementById('cam-level-3').classList.add('hidden');
+  updateFab();
 }
 
 function openSalaTable(tvNum){
@@ -66,7 +73,6 @@ function showSalaLevel1(){
   document.getElementById('cam-level-1').classList.remove('hidden');
   document.getElementById('cam-level-2').classList.add('hidden');
   document.getElementById('cam-level-3').classList.add('hidden');
-  refreshCatCounts();
   updateFab();
 }
 
