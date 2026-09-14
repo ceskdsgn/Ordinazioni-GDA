@@ -1,3 +1,8 @@
+/* ── ORIENTATION LOCK ── */
+if(screen.orientation&&screen.orientation.lock){
+  screen.orientation.lock('portrait').catch(()=>{});
+}
+
 /* ── PIN ── */
 let _pinBuffer='';
 

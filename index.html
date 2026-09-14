@@ -29,6 +29,16 @@
 </head>
 <body>
 
+<!-- ══════════════ ROTATE OVERLAY ══════════════ -->
+<div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#1a1a1a;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:64px;animation:spin90 1.2s ease-in-out infinite alternate;">&#8635;</div>
+  <p style="color:#fff;font-size:18px;font-weight:600;text-align:center;margin:0;padding:0 32px;">Ruota il dispositivo<br><span style="font-size:14px;color:#888;font-weight:400;">L'app funziona solo in verticale</span></p>
+</div>
+<style>
+@keyframes spin90{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
+@media(orientation:landscape)and(max-width:1024px){#rotate-overlay{display:flex!important;}}
+</style>
+
 <!-- ══════════════ PIN SCREEN ══════════════ -->
 <div id="pin-screen">
   <div class="pin-box">
