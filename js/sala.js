@@ -271,14 +271,16 @@ function renderPiattiList(cat){
       const fmt=window._wineFormat[p.id];
       return`<div class="cam-piatto-box">${imgSection}
         <div class="cam-piatto-name">${esc(p.name)}</div>
-        <div class="wine-format-sel" style="padding:0 8px;">
-          <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" onclick="setWineFormat('${p.id}','Bottiglia')"><span class="wfe">🍾</span>Bottiglia</button>
-          <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" onclick="setWineFormat('${p.id}','Calice')"><span class="wfe">🥂</span>Calice</button>
-        </div>
-        <div class="cam-piatto-btns">
-          <button class="cpb-btn" onclick="changeQty('${p.id}',-1)">−</button>
-          <span class="cpb-qty${qty===0?' zero':''}" id="iq-${p.id}">${qty}</span>
-          <button class="cpb-btn" onclick="changeQty('${p.id}',1)">+</button>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:5px;">
+          <div class="wine-format-sel" style="padding:0 8px;">
+            <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" onclick="setWineFormat('${p.id}','Bottiglia')"><span class="wfe">🍾</span>Bottiglia</button>
+            <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')"><span class="wfe">🥂</span>Calice</button>
+          </div>
+          <div class="cam-piatto-btns">
+            <button class="cpb-btn" onclick="changeQty('${p.id}',-1)">−</button>
+            <span class="cpb-qty${qty===0?' zero':''}" id="iq-${p.id}">${qty}</span>
+            <button class="cpb-btn" onclick="changeQty('${p.id}',1)">+</button>
+          </div>
         </div>
       </div>`;
     }
