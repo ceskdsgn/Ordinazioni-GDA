@@ -245,7 +245,7 @@ function renderPiattiList(cat){
     const ppk=Number(p.price_per_kg||0);
     const bp=Number(p.base_price||p.price||0);
     const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'';
-    const imgSection=p.image_url?`<div class="piatto-img-wrap"><img class="piatto-img" src="${esc(p.image_url)}?w=400&h=220&fit=crop&auto=format&q=75" loading="lazy" alt=""></div>`:'';
+    const imgSection=p.image_url?`<div class="piatto-img-wrap"><img class="piatto-img" src="${esc(p.image_url)}" loading="eager" decoding="async" alt=""></div>`:'';
     if(isFish&&ppk>0){
       if(!window._kgMap) window._kgMap={};
       if(window._kgMap[p.id]==null){window._kgMap[p.id]='';}

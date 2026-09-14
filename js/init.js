@@ -63,6 +63,7 @@ async function loadMenu(){
   setSyncState('online');
   renderCatGrid();renderDishList();renderCatSelect();
   loadSalaLevel0();
+  menu.forEach(p=>{if(p.image_url){const i=new Image();i.src=p.image_url;}});
 }
 async function seedDefaultMenu(){
   const d=[
