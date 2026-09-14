@@ -245,70 +245,51 @@ function renderPiattiList(cat){
     const ppk=Number(p.price_per_kg||0);
     const bp=Number(p.base_price||p.price||0);
     const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'';
-    const imgHtml=p.image_url?`<img class="piatto-img" src="${esc(p.image_url)}?w=400&h=220&fit=crop&auto=format&q=75" loading="lazy" alt="${esc(p.name)}">`:'';
+    const imgSection=p.image_url?`<div class="piatto-img-wrap"><img class="piatto-img" src="${esc(p.image_url)}?w=400&h=220&fit=crop&auto=format&q=75" loading="lazy" alt=""></div>`:'';
     if(isFish&&ppk>0){
       if(!window._kgMap) window._kgMap={};
       if(window._kgMap[p.id]==null){window._kgMap[p.id]='';}
       const pm=menu.find(x=>x.id===p.id);if(pm){pm._bp=bp;pm._ppk=ppk;}
-      const qty=order[p.id]||0;
-      const kg=parseFloat(kgVal)||0;
-      const dynPrice=kg>0?`€${(bp*qty+ppk*kg).toFixed(2)}`:`€${(bp*qty).toFixed(2)}`;
-      return`<div class="cam-piatto-box" id="row-${p.id}">${imgHtml}<div class="cam-piatto-box-content">
-        <div class="cam-piatto-box-top">
-          <div class="cam-piatto-name">${esc(p.name)}</div>
-          <div class="cam-piatto-price" id="dynprice-${p.id}">${dynPrice}</div>
-        </div>
-        <div class="cam-piatto-box-bottom" style="justify-content:stretch;gap:6px;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#1a1916;border:1.5px solid #4a4842;border-radius:10px;padding:5px 8px;">
+      return`<div class="cam-piatto-box" id="row-${p.id}">${imgSection}
+        <div class="cam-piatto-name">${esc(p.name)}</div>
+        <div class="cam-piatto-btns" style="gap:5px;">
+          <div style="flex:2;display:flex;align-items:center;background:#1a1a1a;border:0.5px solid #5d5d5d;border-radius:8px;padding:7px 6px;gap:3px;">
             <input type="number" min="0" step="0.1" placeholder="0" value="${kgVal}"
-              style="width:100%;background:transparent;border:none;color:#f0ede8;font-size:13px;font-weight:600;text-align:center;outline:none;-moz-appearance:textfield;"
+              style="width:100%;background:transparent;border:none;color:#fff;font-size:12px;font-weight:600;text-align:center;outline:none;-moz-appearance:textfield;"
               oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" onkeydown="if(event.key==='Enter')this.blur()" />
-            <span style="font-size:11px;color:#6b6860;flex-shrink:0">kg</span>
+            <span style="font-size:10px;color:#777;flex-shrink:0">kg</span>
           </div>
-          <div class="inline-qty" style="flex:2;">
-            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>
-            <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
-            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
-          </div>
+          <button class="cpb-btn" onclick="changeQty('${p.id}',-1)">−</button>
+          <span class="cpb-qty${qty===0?' zero':''}" id="iq-${p.id}">${qty}</span>
+          <button class="cpb-btn" onclick="changeQty('${p.id}',1)">+</button>
         </div>
-      </div></div>`;
+      </div>`;
     }
     if(isWine){
       if(!window._wineFormat) window._wineFormat={};
       if(!window._wineFormat[p.id]) window._wineFormat[p.id]='Bottiglia';
       const fmt=window._wineFormat[p.id];
-      const displayPrice=getWineUnitPrice(p,fmt);
-      return`<div class="cam-piatto-box">${imgHtml}<div class="cam-piatto-box-content">
-        <div class="cam-piatto-box-top">
-          <div class="cam-piatto-name">${esc(p.name)}</div>
-          <div class="cam-piatto-price" id="wine-price-${p.id}">€${displayPrice.toFixed(2)}</div>
-        </div>
-        <div class="cam-piatto-box-bottom" style="flex-direction:column;gap:6px;">
-          <div class="wine-format-sel" style="padding:0;">
-            <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" data-wid="${p.id}" data-fmt="Bottiglia" onclick="setWineFormat('${p.id}','Bottiglia')"><span class="wfe">🍾</span>Bottiglia</button>
-            <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" data-wid="${p.id}" data-fmt="Calice" onclick="setWineFormat('${p.id}','Calice')"><span class="wfe">🥂</span>Calice</button>
-          </div>
-          <div class="inline-qty" style="width:100%;">
-            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>
-            <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
-            <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
-          </div>
-        </div>
-      </div></div>`;
-    }
-    return`<div class="cam-piatto-box">${imgHtml}<div class="cam-piatto-box-content">
-      <div class="cam-piatto-box-top">
+      return`<div class="cam-piatto-box">${imgSection}
         <div class="cam-piatto-name">${esc(p.name)}</div>
-        <div class="cam-piatto-price">€${Number(p.price).toFixed(2)}</div>
-      </div>
-      <div class="cam-piatto-box-bottom">
-        <div class="inline-qty" style="width:100%;">
-          <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',-1)">−</button>
-          <span class="iq-val ${qty===0?'zero':''}" id="iq-${p.id}">${qty}</span>
-          <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
+        <div class="wine-format-sel" style="padding:0 8px;">
+          <button class="wine-fmt-btn${fmt==='Bottiglia'?' active':''}" onclick="setWineFormat('${p.id}','Bottiglia')"><span class="wfe">🍾</span>Bottiglia</button>
+          <button class="wine-fmt-btn${fmt==='Calice'?' active':''}" onclick="setWineFormat('${p.id}','Calice')"><span class="wfe">🥂</span>Calice</button>
         </div>
+        <div class="cam-piatto-btns">
+          <button class="cpb-btn" onclick="changeQty('${p.id}',-1)">−</button>
+          <span class="cpb-qty${qty===0?' zero':''}" id="iq-${p.id}">${qty}</span>
+          <button class="cpb-btn" onclick="changeQty('${p.id}',1)">+</button>
+        </div>
+      </div>`;
+    }
+    return`<div class="cam-piatto-box">${imgSection}
+      <div class="cam-piatto-name">${esc(p.name)}</div>
+      <div class="cam-piatto-btns">
+        <button class="cpb-btn" onclick="changeQty('${p.id}',-1)">−</button>
+        <span class="cpb-qty${qty===0?' zero':''}" id="iq-${p.id}">${qty}</span>
+        <button class="cpb-btn" onclick="changeQty('${p.id}',1)">+</button>
       </div>
-    </div></div>`;
+    </div>`;
   }).join('');
 }
 function updateFishKg(id,val,bp,ppk){
@@ -316,31 +297,13 @@ function updateFishKg(id,val,bp,ppk){
   window._kgMap[id]=val;
   const p=menu.find(x=>x.id===id);
   if(p){p._bp=bp;p._ppk=ppk;}
-  const qty=order[id]||0;
-  const el=document.getElementById('dynprice-'+id);
-  if(el){
-    const kg=val!==''&&!isNaN(parseFloat(val))?parseFloat(val):0;
-    const total=bp*qty||0+ppk*kg;
-    el.textContent=`€${total.toFixed(2)}`;
-  }
   renderCart();setTotal();
 }
 function changeQty(id,delta){
   order[id]=(order[id]||0)+delta;
   if(order[id]<=0)delete order[id];
   const el=document.getElementById('iq-'+id);
-  if(el){const q=order[id]||0;el.textContent=q;el.className='iq-val'+(q===0?' zero':'');}
-  // aggiorna display prezzo per piatti pesce
-  const p=menu.find(x=>x.id===id);
-  if(p&&p._ppk>0){
-    const priceEl=document.getElementById('dynprice-'+id);
-    if(priceEl){
-      const kg=window._kgMap&&window._kgMap[id]?parseFloat(window._kgMap[id]):0;
-      const qty=order[id]||0;
-      const total=p._bp*qty||0+p._ppk*kg;
-      priceEl.textContent=`€${total.toFixed(2)}`;
-    }
-  }
+  if(el){const q=order[id]||0;el.textContent=q;el.className='cpb-qty'+(q===0?' zero':'');}
   updateFab();renderCart();
 }
 function updateFab(){
