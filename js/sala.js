@@ -252,8 +252,8 @@ function renderPiattiList(cat){
       const pm=menu.find(x=>x.id===p.id);if(pm){pm._bp=bp;pm._ppk=ppk;}
       return`<div class="cam-piatto-box" id="row-${p.id}">${imgSection}
         <div class="cam-piatto-name">${esc(p.name)}</div>
-        <div class="cam-piatto-btns" style="gap:5px;">
-          <div style="flex:2;display:flex;align-items:center;background:#1a1a1a;border:0.5px solid #5d5d5d;border-radius:8px;padding:7px 6px;gap:3px;">
+        <div class="cam-piatto-btns" style="gap:5px;align-items:stretch;">
+          <div style="flex:2;display:flex;align-items:center;background:#1a1a1a;border:0.5px solid #5d5d5d;border-radius:8px;padding:0 6px;gap:3px;">
             <input type="number" min="0" step="0.1" placeholder="0" value="${kgVal}"
               style="width:100%;background:transparent;border:none;color:#fff;font-size:12px;font-weight:600;text-align:center;outline:none;-moz-appearance:textfield;"
               oninput="updateFishKg('${p.id}',this.value,${bp},${ppk})" onkeydown="if(event.key==='Enter')this.blur()" />
