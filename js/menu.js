@@ -72,6 +72,9 @@ function renderDishList(){
           <input class="form-input form-input-sm" id="edit-price-${d.id}" type="number" min="0" step="0.5" value="${Number(d.price).toFixed(2)}" placeholder="€" />
         </div>
         `}
+        <div class="dish-edit-row">
+          <input class="form-input" id="edit-img-${d.id}" value="${esc(d.image_url||'')}" placeholder="URL immagine (opzionale)" />
+        </div>
         <button class="add-dish-btn" style="margin-top:4px" onclick="saveDish('${d.id}')">Salva modifiche</button>
       </div>`;
     }).join('');
@@ -117,6 +120,8 @@ async function saveDish(id){
     if(isNaN(price)||price<0){showToast('❌ Prezzo non valido');return;}
     update={...update,price,base_price:0,price_per_kg:0};
   }
+  const imgUrl=document.getElementById('edit-img-'+id).value.trim();
+  update.image_url=imgUrl||null;
   setSyncState('syncing');
   const{error}=await sb.from('menu').update(update).eq('id',id);
   if(error){setSyncState('error');showToast('❌ Errore salvataggio');return;}

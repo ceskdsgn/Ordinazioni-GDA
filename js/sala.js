@@ -245,6 +245,7 @@ function renderPiattiList(cat){
     const ppk=Number(p.price_per_kg||0);
     const bp=Number(p.base_price||p.price||0);
     const kgVal=window._kgMap&&window._kgMap[p.id]!=null?window._kgMap[p.id]:'';
+    const imgHtml=p.image_url?`<img class="piatto-img" src="${esc(p.image_url)}?w=400&h=220&fit=crop&auto=format&q=75" loading="lazy" alt="${esc(p.name)}">`:'';
     if(isFish&&ppk>0){
       if(!window._kgMap) window._kgMap={};
       if(window._kgMap[p.id]==null){window._kgMap[p.id]='';}
@@ -252,7 +253,7 @@ function renderPiattiList(cat){
       const qty=order[p.id]||0;
       const kg=parseFloat(kgVal)||0;
       const dynPrice=kg>0?`€${(bp*qty+ppk*kg).toFixed(2)}`:`€${(bp*qty).toFixed(2)}`;
-      return`<div class="cam-piatto-box" id="row-${p.id}">
+      return`<div class="cam-piatto-box" id="row-${p.id}">${imgHtml}<div class="cam-piatto-box-content">
         <div class="cam-piatto-box-top">
           <div class="cam-piatto-name">${esc(p.name)}</div>
           <div class="cam-piatto-price" id="dynprice-${p.id}">${dynPrice}</div>
@@ -270,14 +271,14 @@ function renderPiattiList(cat){
             <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
           </div>
         </div>
-      </div>`;
+      </div></div>`;
     }
     if(isWine){
       if(!window._wineFormat) window._wineFormat={};
       if(!window._wineFormat[p.id]) window._wineFormat[p.id]='Bottiglia';
       const fmt=window._wineFormat[p.id];
       const displayPrice=getWineUnitPrice(p,fmt);
-      return`<div class="cam-piatto-box">
+      return`<div class="cam-piatto-box">${imgHtml}<div class="cam-piatto-box-content">
         <div class="cam-piatto-box-top">
           <div class="cam-piatto-name">${esc(p.name)}</div>
           <div class="cam-piatto-price" id="wine-price-${p.id}">€${displayPrice.toFixed(2)}</div>
@@ -293,9 +294,9 @@ function renderPiattiList(cat){
             <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
           </div>
         </div>
-      </div>`;
+      </div></div>`;
     }
-    return`<div class="cam-piatto-box">
+    return`<div class="cam-piatto-box">${imgHtml}<div class="cam-piatto-box-content">
       <div class="cam-piatto-box-top">
         <div class="cam-piatto-name">${esc(p.name)}</div>
         <div class="cam-piatto-price">€${Number(p.price).toFixed(2)}</div>
@@ -307,7 +308,7 @@ function renderPiattiList(cat){
           <button class="iq-btn" style="flex:1" onclick="changeQty('${p.id}',1)">+</button>
         </div>
       </div>
-    </div>`;
+    </div></div>`;
   }).join('');
 }
 function updateFishKg(id,val,bp,ppk){
