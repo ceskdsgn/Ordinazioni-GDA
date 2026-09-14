@@ -88,9 +88,9 @@ function renderCatGrid(){
       <span class="cat-box-count ${count>0?'visible':''}" id="cbox-count-${esc(cfg.name)}">${count}</span>
     </div>`;
   }).join('')+
-  `<div class="cat-box cat-box-custom" onclick="openCustomPiatto()">
+  `<div class="cat-box cat-box-custom" style="grid-column:span 2" onclick="openCustomPiatto()">
     <span class="cat-box-emoji">✏️</span>
-    <span class="cat-box-name">Personaliz.</span>
+    <span class="cat-box-name">Personalizzato</span>
   </div>`;
 }
 function refreshCatCounts(){

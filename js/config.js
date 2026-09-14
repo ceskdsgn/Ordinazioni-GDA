@@ -14,6 +14,5 @@ const CAT_CONFIG=[
   {name:'Contorni',emoji:'🥦'},
   {name:'Dessert',emoji:'🍮'},
   {name:'Bevande',emoji:'🍷',sub:[{name:'Bibite',emoji:'🥤'},{name:'Vini',emoji:'🍷'},{name:'Birre',emoji:'🍺'}]},
-  {name:'Bar',emoji:'☕'},
 ];
 const FISH_CATS=['Primi di mare','Secondi di mare'];
