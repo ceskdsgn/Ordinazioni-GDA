@@ -1,3 +1,29 @@
+/* ── SHUTDOWN ── */
+function openShutdownModal(){
+  document.getElementById('shutdown-error').style.display='none';
+  const btn=document.getElementById('shutdown-confirm-btn');
+  btn.disabled=false;btn.textContent='Spegni';
+  document.getElementById('modal-shutdown').classList.add('open');
+}
+function closeShutdownModal(){
+  document.getElementById('modal-shutdown').classList.remove('open');
+}
+async function confirmShutdown(){
+  const btn=document.getElementById('shutdown-confirm-btn');
+  const cancelBtn=document.getElementById('shutdown-cancel-btn');
+  if(btn.disabled) return;
+  btn.disabled=true;cancelBtn.disabled=true;
+  btn.textContent='Spegnimento…';
+  document.getElementById('shutdown-error').style.display='none';
+  try{
+    await fetch('http://127.0.0.1:8765/shutdown',{method:'POST',signal:AbortSignal.timeout(5000)});
+  }catch(e){
+    document.getElementById('shutdown-error').style.display='block';
+    btn.disabled=false;cancelBtn.disabled=false;btn.textContent='Spegni';
+    return;
+  }
+}
+
 async function loadCucina(silent=false){
   const{data,error}=await sb.from('comande').select('*').eq('stato','attivo').order('ts');
   if(error){setSyncState('error');return;}

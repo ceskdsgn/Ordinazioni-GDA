@@ -169,6 +169,7 @@
 <div id="screen-cucina" class="screen">
   <div class="cucina-kanban" id="cucina-grid"></div>
   <button class="cancellate-fab" onclick="openComandeCancellate()">🗑 Cancellate</button>
+  <button class="shutdown-fab" onclick="openShutdownModal()">⏻ Spegni</button>
   <div class="cancellate-panel" id="cancellate-panel">
     <div class="cancellate-bar">
       <button class="back-btn" onclick="closeComandeCancellate()">←</button>
@@ -220,6 +221,18 @@
 </div>
 
 <!-- MODALE CONFERMA CANCELLAZIONE -->
+<div class="modal-overlay" id="modal-shutdown">
+  <div class="modal-box">
+    <div class="modal-title">Spegnere il dispositivo?</div>
+    <div class="modal-msg">La postazione verrà spenta e non riceverà nuove comande fino alla successiva accensione.</div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" id="shutdown-cancel-btn" onclick="closeShutdownModal()">Annulla</button>
+      <button class="modal-btn-confirm" id="shutdown-confirm-btn" onclick="confirmShutdown()">Spegni</button>
+    </div>
+    <div id="shutdown-error" style="display:none;margin-top:12px;color:#dc2626;font-size:13px;font-weight:600;">Impossibile spegnere il dispositivo.</div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-cancella">
   <div class="modal-box">
     <div class="modal-title">Cancella comanda</div>
