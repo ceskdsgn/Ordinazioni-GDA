@@ -38,10 +38,18 @@
 <script>
 (function(){
   var el=document.getElementById('rotate-overlay');
-  function check(){el.style.display=window.innerWidth>window.innerHeight?'flex':'none';}
+  function check(){
+    if(window.innerWidth>window.innerHeight){
+      var tb=document.querySelector('.topbar');
+      el.style.top=(tb?tb.getBoundingClientRect().bottom:0)+'px';
+      el.style.display='flex';
+    }else{
+      el.style.display='none';
+    }
+  }
   check();
   window.addEventListener('resize',check);
-  window.addEventListener('orientationchange',function(){setTimeout(check,100);});
+  window.addEventListener('orientationchange',function(){setTimeout(check,150);});
 })();
 </script>
 
