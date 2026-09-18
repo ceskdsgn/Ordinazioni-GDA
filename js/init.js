@@ -64,6 +64,8 @@ async function loadMenu(){
   renderCatGrid();renderDishList();renderCatSelect();
   loadSalaLevel0();
   menu.forEach(p=>{if(p.image_url){const i=new Image();i.src=p.image_url;}});
+  const urlTab=new URLSearchParams(window.location.search).get('tab');
+  if(urlTab&&['cucina','dolci','tavoli','menu'].includes(urlTab)) showTab(urlTab);
 }
 async function seedDefaultMenu(){
   const d=[
