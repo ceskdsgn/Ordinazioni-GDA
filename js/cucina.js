@@ -6,18 +6,31 @@ async function loadCucina(silent=false){
 
 function parsePiatti(c){return Array.isArray(c.piatti)?c.piatti:JSON.parse(c.piatti||'[]');}
 
+let _audioCtx=null;
+function _getAudioCtx(){
+  if(!_audioCtx) _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return _audioCtx;
+}
+// sblocca l'AudioContext al primo gesto utente (necessario su iOS)
+['touchstart','click'].forEach(ev=>document.addEventListener(ev,function unlock(){
+  _getAudioCtx().resume();
+  document.removeEventListener(ev,unlock);
+},{once:true}));
+
 function playNotificationSound(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    [[880,0,0.25],[1100,0.15,0.25],[1320,0.3,0.4]].forEach(([freq,start,dur])=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-      osc.connect(gain);gain.connect(ctx.destination);
-      osc.type='sine';osc.frequency.value=freq;
-      gain.gain.setValueAtTime(1.0,ctx.currentTime+start);
-      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+start+dur);
-      osc.start(ctx.currentTime+start);
-      osc.stop(ctx.currentTime+start+dur+0.05);
+    const ctx=_getAudioCtx();
+    ctx.resume().then(()=>{
+      [[880,0,0.25],[1100,0.15,0.25],[1320,0.3,0.4]].forEach(([freq,start,dur])=>{
+        const osc=ctx.createOscillator();
+        const gain=ctx.createGain();
+        osc.connect(gain);gain.connect(ctx.destination);
+        osc.type='sine';osc.frequency.value=freq;
+        gain.gain.setValueAtTime(1.0,ctx.currentTime+start);
+        gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+start+dur);
+        osc.start(ctx.currentTime+start);
+        osc.stop(ctx.currentTime+start+dur+0.05);
+      });
     });
   }catch(e){}
 }
