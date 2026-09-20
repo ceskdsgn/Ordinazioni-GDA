@@ -68,7 +68,6 @@ function renderCucina(silent=false){
 
   let hasNew=false;
   el.innerHTML=comande.map(c=>{
-    const isNew=!cucinaSeenIds.has(c.id);if(isNew){cucinaSeenIds.add(c.id);hasNew=true;}
     const time=new Date(c.ts).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     const piatti=parsePiatti(c);
 
@@ -82,7 +81,11 @@ function renderCucina(silent=false){
       byCat[k].push(p);
     });
     const cats=[...catOrder.filter(c=>byCat[c]),...Object.keys(byCat).filter(c=>!catOrder.includes(c))];
+    // comanda solo bibite/dolci/coperti: non compare in cucina → niente NUOVO, niente suono
     if(!cats.length) return '';
+
+    const isNew=!cucinaSeenIds.has(c.id);
+    if(isNew){cucinaSeenIds.add(c.id);hasNew=true;}
 
     const CAT_LETTER={'Antipasti':'A','Primi di mare':'P','Primi di terra':'P','Secondi di mare':'S','Secondi di carne':'S','Contorni':'C','Bibite':'B','Birre':'B','Vini':'V'};
     const CAT_COLOR_IDX={'Antipasti':0,'Primi di mare':1,'Primi di terra':1,'Secondi di mare':2,'Secondi di carne':2,'Contorni':3,'Dessert':4,'Bibite':5,'Vini':5,'Birre':5,'Bar':6};
@@ -112,7 +115,9 @@ function renderCucina(silent=false){
       ${c.note?`<div class="comanda-note"><span class="comanda-note-label">Note</span> ${esc(c.note)}</div>`:''}
     </div>`;
   }).join('');
-  if(hasNew && !silent) playNotificationSound();
+  // suono solo se c'è una nuova comanda con piatti da cucina E si è nel tab cucina
+  const cucinaVisible=document.getElementById('screen-cucina').classList.contains('visible');
+  if(hasNew && !silent && cucinaVisible) playNotificationSound();
 }
 
 function chiudiModale(){document.getElementById('modal-cancella').classList.remove('open');}
@@ -188,4 +193,3 @@ async function renderComandeCancellate(){
     </div>`;
   }).join('');
 }
-
