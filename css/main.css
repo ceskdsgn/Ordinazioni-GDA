@@ -330,6 +330,8 @@ input,select,textarea{font-size:16px !important;}
 .coperti-qty-btn{width:30px;height:30px;border-radius:var(--radius);border:1.5px solid var(--border-s);background:transparent;color:var(--text-pri);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
 .coperti-qty-btn:active{background:var(--bg1);}
 .coperti-qty-val{min-width:22px;text-align:center;font-size:16px;font-weight:700;color:var(--text-pri);}
+.coperti-qty-input{width:36px;background:transparent;border:none;color:var(--text-pri);font-size:16px;font-weight:700;text-align:center;outline:none;-moz-appearance:textfield;}
+.coperti-qty-input::-webkit-inner-spin-button,.coperti-qty-input::-webkit-outer-spin-button{-webkit-appearance:none;}
 
 /* ── WINE FORMAT ── */
 .wine-format-sel{display:flex;gap:8px;padding:6px 0 2px;width:100%;}

@@ -80,7 +80,7 @@ async function changeCopertiConti(tavoloKey,delta){
   }
   setSyncState('online');
   const qtyEl=document.getElementById('coperti-qty-'+tavoloKey);
-  if(qtyEl) qtyEl.textContent=tv.piatti[cKey].qty;
+  if(qtyEl) qtyEl.value=tv.piatti[cKey].qty;
   const unitPrice=Number(tv.piatti[cKey].price);
   const priceEl=document.getElementById('coperti-price-'+tavoloKey);
   if(priceEl) priceEl.textContent='€'+(tv.piatti[cKey].qty*unitPrice).toFixed(2);
@@ -88,6 +88,17 @@ async function changeCopertiConti(tavoloKey,delta){
   const totale=allRighe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
   const totalEl=document.getElementById('tavolo-total-'+tavoloKey);
   if(totalEl) totalEl.textContent='€'+totale.toFixed(2);
+}
+
+async function setCopertiConti(tavoloKey,newVal){
+  const newQty=Math.max(0,parseInt(newVal)||0);
+  const tv=window._tavoliData&&window._tavoliData[tavoloKey];
+  if(!tv) return;
+  const cKey=Object.keys(tv.piatti).find(k=>tv.piatti[k].cat==='Coperti');
+  if(!cKey) return;
+  const currentQty=tv.piatti[cKey].qty;
+  if(newQty===currentQty) return;
+  await changeCopertiConti(tavoloKey,newQty-currentQty);
 }
 
 function buildTavoloCard(tv){
@@ -113,7 +124,10 @@ function buildTavoloCard(tv){
         <span class="tavolo-piatto-name" style="flex:1">${esc(p.name)}</span>
         <div class="coperti-qty-ctrl">
           <button class="coperti-qty-btn" onclick="changeCopertiConti('${tvKey}',-1)">−</button>
-          <span class="coperti-qty-val" id="coperti-qty-${tvKey}">${p.qty}</span>
+          <input type="number" min="0" class="coperti-qty-input" id="coperti-qty-${tvKey}" value="${p.qty}"
+            onchange="setCopertiConti('${tvKey}',this.value)"
+            onkeydown="if(event.key==='Enter')this.blur()"
+            onclick="this.select()"/>
           <button class="coperti-qty-btn" onclick="changeCopertiConti('${tvKey}',1)">+</button>
         </div>
         <span class="tavolo-piatto-price" id="coperti-price-${tvKey}">${priceStr}</span>
