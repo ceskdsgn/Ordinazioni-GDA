@@ -286,5 +286,6 @@ async function cancellaTavolo(tavolo){
   showToast('Tavolo cancellato');
   backToTavoliGrid();
   await loadTavoli();
+  await loadSalaLevel0();
   if(document.getElementById('screen-cucina').classList.contains('visible')) await loadCucina();
 }

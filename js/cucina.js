@@ -112,7 +112,7 @@ function renderCucina(silent=false){
       ${c.note?`<div class="comanda-note"><span class="comanda-note-label">Note</span> ${esc(c.note)}</div>`:''}
     </div>`;
   }).join('');
-  if(hasNew && !silent) playNotificationSound();
+  if(hasNew && !silent && document.getElementById('screen-cucina').classList.contains('visible')) playNotificationSound();
 }
 
 function chiudiModale(){document.getElementById('modal-cancella').classList.remove('open');}
