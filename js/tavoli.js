@@ -62,27 +62,28 @@ async function changeCopertiConti(tavoloKey,delta){
   if(!tv) return;
   const cKey=Object.keys(tv.piatti).find(k=>tv.piatti[k].cat==='Coperti');
   if(!cKey) return;
-  const newQty=Math.max(0,tv.piatti[cKey].qty+delta);
   for(const id of tv.ids){
     const c=window._comandeMap[id];
     if(!c) continue;
     const piatti=parsePiatti(c);
     const idx=piatti.findIndex(p=>p.cat==='Coperti');
     if(idx===-1) continue;
-    piatti[idx].qty=newQty;
+    const oldQty=piatti[idx].qty;
+    const newIndQty=Math.max(0,oldQty+delta);
+    piatti[idx].qty=newIndQty;
     setSyncState('syncing');
     const{error}=await sb.from('comande').update({piatti:JSON.stringify(piatti)}).eq('id',id);
     if(error){setSyncState('error');showToast('❌ Errore');return;}
     c.piatti=JSON.stringify(piatti);
-    tv.piatti[cKey].qty=newQty;
+    tv.piatti[cKey].qty=tv.piatti[cKey].qty+(newIndQty-oldQty);
     break;
   }
   setSyncState('online');
   const qtyEl=document.getElementById('coperti-qty-'+tavoloKey);
-  if(qtyEl) qtyEl.textContent=newQty;
+  if(qtyEl) qtyEl.textContent=tv.piatti[cKey].qty;
   const unitPrice=Number(tv.piatti[cKey].price);
   const priceEl=document.getElementById('coperti-price-'+tavoloKey);
-  if(priceEl) priceEl.textContent='€'+(newQty*unitPrice).toFixed(2);
+  if(priceEl) priceEl.textContent='€'+(tv.piatti[cKey].qty*unitPrice).toFixed(2);
   const allRighe=Object.values(tv.piatti);
   const totale=allRighe.reduce((s,p)=>s+(p.kg!=null?Number(p.price):Number(p.price)*p.qty),0);
   const totalEl=document.getElementById('tavolo-total-'+tavoloKey);
